@@ -35,6 +35,13 @@ const viewItems: Array<{ id: ExplorerView; label: string; icon: ComponentType<{ 
   { id: "text", label: "原文", icon: BookOpenText },
 ];
 
+function ModernRegionLine({ name }: { name: string }) {
+  const region = getModernRegion(name)?.replace(/^今[：:\s]*/, "");
+  if (!region) return null;
+
+  return <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{region}</p>;
+}
+
 export function FangyuExplorer({ sections }: FangyuExplorerProps) {
   const query = useExplorerStore((state) => state.query);
   const selectedId = useExplorerStore((state) => state.selectedId);
@@ -219,9 +226,7 @@ function AnalysisPanel({ section }: { section: FangyuSection }) {
           {section.analysis.places.map((place) => (
             <div key={place.name} className="border-l-2 border-[#b84b36] bg-white px-3 py-2">
               <p className="font-medium text-[#171916]">{place.name}</p>
-              {getModernRegion(place.name) && (
-                <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{getModernRegion(place.name)}</p>
-              )}
+              <ModernRegionLine name={place.name} />
               <p className="mt-1 text-sm leading-6 text-[#686b64]">{place.role}</p>
             </div>
           ))}
@@ -419,9 +424,7 @@ function StrategyMap({
           {selected.analysis.places.map((place) => (
             <div key={place.name} className="border-b border-[#eee8dd] pb-3 last:border-b-0">
               <p className="font-medium">{place.name}</p>
-              {getModernRegion(place.name) && (
-                <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{getModernRegion(place.name)}</p>
-              )}
+              <ModernRegionLine name={place.name} />
               <p className="mt-1 text-sm leading-6 text-[#63675f]">{place.role}</p>
             </div>
           ))}
