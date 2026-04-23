@@ -123,7 +123,7 @@ src/lib/geostrategy-topology.ts
 - 增加原文语义搜索
 - 导出结构化 JSON 数据集
 - 为 Markdown 解析和拓扑生成增加测试
-- 正式开源前补充许可证文件
+- 持续完善许可证、贡献指南和数据引用说明
 
 ## 参与贡献
 
@@ -140,9 +140,7 @@ src/lib/geostrategy-topology.ts
 
 ## 许可证
 
-当前尚未选择开源许可证。
-
-正式开源前，需要添加 `LICENSE` 文件，并在这里说明许可证类型。
+本项目采用 MIT License 开源，详见 `LICENSE` 文件。
 
 ## 致谢
 
