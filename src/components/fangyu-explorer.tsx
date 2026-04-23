@@ -11,7 +11,7 @@ import {
   type Edge,
   type Node,
 } from "@xyflow/react";
-import { BookOpenText, BrainCircuit, ExternalLink, GitBranch, Map, Search, Sparkles, Timer } from "lucide-react";
+import { BookOpenText, BrainCircuit, ExternalLink, GitBranch, Map, Search, Timer } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { clsx } from "clsx";
 import type { EChartsOption } from "echarts";
@@ -101,8 +101,8 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
       <div className="grid min-h-screen grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_360px]">
         <aside className="border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
           <div className="px-5 py-5">
-            <p className="text-xs tracking-[0.28em] text-[#7a3c2e]">形势推演</p>
-            <h1 className="mt-3 text-3xl font-semibold leading-tight text-[#171916]">古代地缘形势推演</h1>
+            <p className="text-xs tracking-[0.22em] text-[#7a3c2e]">形势推演</p>
+            <h1 className="mt-3 text-2xl font-semibold leading-tight text-[#171916]">古代地缘形势推演</h1>
             <div className="mt-5 flex h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3">
               <Search size={17} className="text-[#7b7d74]" />
               <input
@@ -142,7 +142,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
           <div className="flex flex-col gap-5 border-b border-[#dad7cb] bg-[#fdfcf8] px-5 py-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="font-mono text-sm text-[#7a3c2e]">{selected.analysis.posture}</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-normal text-[#171916] md:text-4xl">
+              <h2 className="mt-2 text-3xl font-semibold tracking-normal text-[#171916]">
                 {selected.displayTitle}
               </h2>
             </div>
@@ -182,14 +182,14 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
         </section>
 
         <aside className="border-t border-[#dad7cb] bg-[#fbfaf6] xl:border-l xl:border-t-0">
-          <AnalysisPanel section={selected} />
+          <AnalysisPanel section={selected} view={view} />
         </aside>
       </div>
     </main>
   );
 }
 
-function AnalysisPanel({ section }: { section: FangyuSection }) {
+function AnalysisPanel({ section, view }: { section: FangyuSection; view: ExplorerView }) {
   const metrics = [
     ["权重", section.analysis.strategicWeight],
     ["守势", section.analysis.defensibility],
@@ -199,18 +199,14 @@ function AnalysisPanel({ section }: { section: FangyuSection }) {
 
   return (
     <div className="sticky top-0 max-h-screen overflow-y-auto px-5 py-5">
-      <div className="flex items-center gap-2 text-[#7a3c2e]">
-        <Sparkles size={17} />
-        <p className="text-sm tracking-[0.2em]">摘要</p>
-      </div>
-      <p className="mt-5 text-lg leading-8 text-[#252924]">{section.analysis.summary}</p>
+      {view !== "topology" && (
+        <div className="border-b border-[#dad7cb] pb-5">
+          <p className="text-sm text-[#777a72]">核心判断</p>
+          <p className="mt-2 text-xl font-semibold leading-8 text-[#171916]">{section.analysis.thesis}</p>
+        </div>
+      )}
 
-      <div className="mt-6 border-y border-[#dad7cb] py-5">
-        <p className="text-sm text-[#777a72]">核心判断</p>
-        <p className="mt-2 text-2xl font-semibold leading-snug text-[#171916]">{section.analysis.thesis}</p>
-      </div>
-
-      <div className="mt-6 grid grid-cols-2 gap-3">
+      <div className={clsx("grid grid-cols-2 gap-3", view === "topology" ? "mt-0" : "mt-6")}>
         {metrics.map(([label, value]) => (
           <div key={label} className="border border-[#dad7cb] bg-white p-3">
             <div className="flex items-baseline justify-between">
@@ -600,9 +596,9 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
         <div className="flex items-start justify-between gap-4 px-1 pb-4">
-          <div>
-            <p className="text-sm text-[#7a3c2e]">拓扑推演</p>
-            <h3 className="mt-1 text-2xl font-semibold">{model.title}</h3>
+          <div className="max-w-3xl">
+            <p className="text-sm text-[#7a3c2e]">核心判断</p>
+            <h3 className="mt-1 text-xl font-semibold leading-8 text-[#171916]">{section.analysis.thesis}</h3>
           </div>
           <div className="text-right text-sm leading-6 text-[#30342f]">
             <p>分析维度</p>
