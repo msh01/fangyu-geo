@@ -1,4 +1,5 @@
 import type { FangyuSection } from "@/lib/fangyu-data";
+import { getModernRegion } from "@/lib/place-modern";
 
 export type TopologyNodeKind = "core" | "shield" | "gate" | "base" | "route" | "threat" | "resource";
 export type TopologyEdgeKind = "control" | "support" | "threaten" | "supply" | "offense";
@@ -11,6 +12,7 @@ export type TopologyNode = {
   y: number;
   note: string;
   evidence: string;
+  modern?: string;
 };
 
 export type TopologyEdge = {
@@ -54,6 +56,7 @@ function makeModel(seed: ModelSeed): TopologyModel {
     ...node,
     x: layout[index]?.[0] ?? 560,
     y: layout[index]?.[1] ?? 320,
+    modern: node.modern ?? getModernRegion(node.label),
   }));
 
   return {

@@ -18,6 +18,7 @@ import type { EChartsOption } from "echarts";
 import type { ComponentType } from "react";
 import type { FangyuSection } from "@/lib/fangyu-data";
 import { getTopologyModel, type TopologyEdgeKind, type TopologyNodeKind } from "@/lib/geostrategy-topology";
+import { getModernRegion } from "@/lib/place-modern";
 import { useExplorerStore, type ExplorerView } from "@/lib/explorer-store";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
@@ -217,6 +218,9 @@ function AnalysisPanel({ section }: { section: FangyuSection }) {
           {section.analysis.places.map((place) => (
             <div key={place.name} className="border-l-2 border-[#b84b36] bg-white px-3 py-2">
               <p className="font-medium text-[#171916]">{place.name}</p>
+              {getModernRegion(place.name) && (
+                <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{getModernRegion(place.name)}</p>
+              )}
               <p className="mt-1 text-sm leading-6 text-[#686b64]">{place.role}</p>
             </div>
           ))}
@@ -372,6 +376,9 @@ function StrategyMap({
           {selected.analysis.places.map((place) => (
             <div key={place.name} className="border-b border-[#eee8dd] pb-3 last:border-b-0">
               <p className="font-medium">{place.name}</p>
+              {getModernRegion(place.name) && (
+                <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{getModernRegion(place.name)}</p>
+              )}
               <p className="mt-1 text-sm leading-6 text-[#63675f]">{place.role}</p>
             </div>
           ))}
@@ -484,7 +491,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
               <div className="flex flex-col items-center gap-1">
                 <span className="font-mono text-[11px] text-black/70">{node.kind}</span>
                 <strong className="text-base">{node.label}</strong>
-                <span className="max-w-[120px] truncate text-xs">{node.note}</span>
+                <span className="max-w-[120px] truncate text-[11px] opacity-80">{node.note}</span>
               </div>
             ),
           },
