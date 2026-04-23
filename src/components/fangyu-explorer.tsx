@@ -553,7 +553,9 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
               <div className="group relative flex flex-col items-center gap-1" title={modernRegion ? `今：${modernRegion}` : undefined}>
                 <span className="font-mono text-[11px] text-black/70">{node.kind}</span>
                 <strong className="text-base">{node.label}</strong>
-                <span className="max-w-[120px] truncate text-[11px] opacity-80">{node.note}</span>
+                <span className="max-w-[120px] truncate text-[11px] text-[#171916] opacity-80 [text-shadow:0_1px_0_rgba(255,255,255,0.72),0_-1px_0_rgba(255,255,255,0.72),1px_0_0_rgba(255,255,255,0.72),-1px_0_0_rgba(255,255,255,0.72)]">
+                  {node.note}
+                </span>
                 {modernRegion && (
                   <span className="pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap border border-[#cfcbbf] bg-[#fffdf7] px-2.5 py-1 text-xs font-medium text-[#30342f] opacity-0 shadow-sm transition group-hover:opacity-100">
                     今：{modernRegion}
