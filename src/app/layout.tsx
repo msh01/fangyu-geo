@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "读史方舆纪要可视化",
-  description: "读史方舆纪要各区域序的历史地理可视化阅读界面",
+  title: "古代地缘形势推演",
+  description: "用地图、拓扑网络和指标图探索古代区域地缘形势。",
 };
 
 export default function RootLayout({
