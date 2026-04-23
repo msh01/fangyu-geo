@@ -281,19 +281,61 @@ function StrategyMap({
       const map = new maplibregl.Map({
         container: containerRef.current,
         center: [108.5, 33.8],
-        zoom: 3.3,
+        zoom: 3.45,
         minZoom: 2.6,
-        maxZoom: 7,
+        maxZoom: 8,
         attributionControl: false,
         style: {
           version: 8,
-          sources: {},
-          layers: [{ id: "background", type: "background", paint: { "background-color": "#e8eadf" } }],
+          sources: {
+            "topographic-base": {
+              type: "raster",
+              tiles: [
+                "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
+                "https://b.tile.opentopomap.org/{z}/{x}/{y}.png",
+                "https://c.tile.opentopomap.org/{z}/{x}/{y}.png",
+              ],
+              tileSize: 256,
+              attribution: "© OpenStreetMap contributors, SRTM | © OpenTopoMap",
+            },
+            "terrain-dem": {
+              type: "raster-dem",
+              tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+              tileSize: 256,
+              encoding: "terrarium",
+              attribution: "Terrain tiles by AWS Open Data Terrain Tiles",
+            },
+          },
+          layers: [
+            { id: "background", type: "background", paint: { "background-color": "#e8eadf" } },
+            {
+              id: "topographic-base",
+              type: "raster",
+              source: "topographic-base",
+              paint: {
+                "raster-opacity": 0.96,
+                "raster-saturation": -0.18,
+                "raster-contrast": 0.08,
+              },
+            },
+            {
+              id: "terrain-hillshade",
+              type: "hillshade",
+              source: "terrain-dem",
+              paint: {
+                "hillshade-exaggeration": 0.45,
+                "hillshade-shadow-color": "#4f584e",
+                "hillshade-highlight-color": "#fff7e2",
+                "hillshade-accent-color": "#7d6f4f",
+              },
+            },
+          ],
         },
       });
 
       mapRef.current = map;
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+      map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
       map.on("load", () => {
         map.addSource("places", { type: "geojson", data: geojson });
         map.addLayer({
