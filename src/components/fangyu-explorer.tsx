@@ -101,7 +101,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
       <div className="grid min-h-screen grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_360px]">
         <aside className="border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
           <div className="px-5 py-5">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-[#7a3c2e]">Fangyu Geo</p>
+            <p className="text-xs tracking-[0.28em] text-[#7a3c2e]">形势推演</p>
             <h1 className="mt-3 text-3xl font-semibold leading-tight text-[#171916]">古代地缘形势推演</h1>
             <div className="mt-5 flex h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3">
               <Search size={17} className="text-[#7b7d74]" />
@@ -201,7 +201,7 @@ function AnalysisPanel({ section }: { section: FangyuSection }) {
     <div className="sticky top-0 max-h-screen overflow-y-auto px-5 py-5">
       <div className="flex items-center gap-2 text-[#7a3c2e]">
         <Sparkles size={17} />
-        <p className="font-mono text-sm uppercase tracking-[0.2em]">Digest</p>
+        <p className="text-sm tracking-[0.2em]">摘要</p>
       </div>
       <p className="mt-5 text-lg leading-8 text-[#252924]">{section.analysis.summary}</p>
 
@@ -421,7 +421,7 @@ function StrategyMap({
         <div ref={containerRef} className="h-full w-full" />
       </div>
       <div className="border border-[#dad7cb] bg-white p-4">
-        <p className="font-mono text-sm text-[#7a3c2e]">Geo Nodes</p>
+        <p className="text-sm text-[#7a3c2e]">地理节点</p>
         <div className="mt-4 space-y-3">
           {selected.analysis.places.map((place) => (
             <div key={place.name} className="border-b border-[#eee8dd] pb-3 last:border-b-0">
@@ -601,7 +601,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
       <div className="overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
         <div className="flex items-start justify-between gap-4 px-1 pb-4">
           <div>
-            <p className="font-mono text-sm text-[#7a3c2e]">Topology Simulation</p>
+            <p className="text-sm text-[#7a3c2e]">拓扑推演</p>
             <h3 className="mt-1 text-2xl font-semibold">{model.title}</h3>
           </div>
           <div className="text-right text-sm leading-6 text-[#30342f]">
@@ -622,13 +622,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
       </div>
 
       <div className="border border-[#dad7cb] bg-white p-4">
-        <p className="font-mono text-sm text-[#7a3c2e]">Deduction</p>
-        <p className="mt-3 text-lg font-semibold leading-8">{model.doctrine}</p>
-        <p className="mt-4 border-l-2 border-[#b84b36] bg-[#fbfaf6] px-3 py-2 text-sm leading-7 text-[#555951]">
-          {model.verdict}
-        </p>
-
-        <div className="mt-5">
+        <div>
           <p className="text-sm text-[#777a72]">拓扑角色</p>
           <div className="mt-3 grid grid-cols-1 gap-2">
             {Object.entries(nodeStyleByKind).map(([kind, item]) => (
@@ -718,7 +712,7 @@ function TimelineView({ sections, selected }: { sections: FangyuSection[]; selec
         <ReactECharts option={option} style={{ height: "100%", width: "100%" }} />
       </div>
       <div className="border border-[#dad7cb] bg-white p-4">
-        <p className="font-mono text-sm text-[#7a3c2e]">Signal</p>
+        <p className="text-sm text-[#7a3c2e]">形势信号</p>
         <div className="mt-5 space-y-4">
           {[
             ["权重", selected.analysis.strategicWeight],

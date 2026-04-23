@@ -36,7 +36,7 @@ const SOURCE_FILE = "读史方舆纪要-各区域序.md";
 const analysisByTitle: Record<string, SectionAnalysis> = {
   历代州域形势纪要序: {
     summary: "以州域和形势的互相转化总摄全书，强调制度疆域有定，而形势随治乱、人事、攻守而变。",
-    thesis: "州域只是棋盘，形势才是用兵治乱的活法。",
+    thesis: "州域只是地图上的范围，真正影响成败的是山川道路和攻守形势。",
     posture: "总论",
     strategicWeight: 82,
     defensibility: 62,
@@ -50,7 +50,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   北直方舆纪要序: {
     summary: "围绕燕都是否可为帝都展开辩难，肯定其制北边之势，也反复指出弃大宁、开平、辽左后京师孤露的危险。",
-    thesis: "燕京可以建都，但不能孤都；北方屏障一失，形胜反成国患。",
+    thesis: "燕京适合做都城，但不能孤零零地守着；北方屏障一丢，地势优势就会变成国家隐患。",
     posture: "守御",
     strategicWeight: 96,
     defensibility: 72,
@@ -67,7 +67,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   南直方舆纪要序: {
     summary: "论证东南并非只能偏安，关键在江汉上游与淮泗门户；南直的价值在于兼具财赋、江防和北伐通道。",
-    thesis: "守江不在江南，守淮不在淮南；东南形势系于上游与两淮。",
+    thesis: "东南能不能守住，关键不只在江南本地，还要看长江上游和两淮是否稳固。",
     posture: "攻守兼备",
     strategicWeight: 94,
     defensibility: 78,
@@ -83,7 +83,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   山东方舆纪要序: {
     summary: "山东与京师犬牙相错，漕渠贯穿其间，既是唇齿之助，也是切断南北命脉的肘腋之患。",
-    thesis: "山东不足恃险自守，却足以因漕运和海路牵动京师。",
+    thesis: "山东不适合单靠险要自守，但它控制漕运和海路，会直接影响京师安全。",
     posture: "攻守兼备",
     strategicWeight: 88,
     defensibility: 56,
@@ -99,7 +99,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   山西方舆纪要序: {
     summary: "以太行、大河、雁门等层层险阻说明山西形势完固，可制河北、关中与河洛，是关中之外最可倚重之地。",
-    thesis: "山西的价值在于既能自固，又可分向关中、河北、河洛。",
+    thesis: "山西的价值在于既能守住自己，也能向关中、河北和河洛方向施加影响。",
     posture: "攻守兼备",
     strategicWeight: 90,
     defensibility: 91,
@@ -115,7 +115,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   河南方舆纪要序: {
     summary: "河南居天下之中，河洛为都会正脉，却也因四面受敌而不能只凭山川险固自守。",
-    thesis: "中原贵在控四方之会，不贵退藏险僻。",
+    thesis: "中原的关键价值在于连接和控制四方，而不是退到偏僻险地自保。",
     posture: "攻守兼备",
     strategicWeight: 91,
     defensibility: 58,
@@ -131,7 +131,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   陕西方舆纪要序: {
     summary: "陕西据上游而制天下命脉，关中、陇右、河西一动常足以酿成天下大势之变。",
-    thesis: "关中是天下头项，得之者可以制人，失控者也最易为天下祸端。",
+    thesis: "关中是控制天下的关键区域；掌握它可以主动制人，失控后也最容易引发大乱。",
     posture: "攻取",
     strategicWeight: 97,
     defensibility: 88,
@@ -147,7 +147,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   四川方舆纪要叙: {
     summary: "反复驳斥蜀可坐守之说，认为四川必须以战为守，作为取关中、控江汉、争天下的先资。",
-    thesis: "蜀非坐守之国；恃险自足，终必门户洞开。",
+    thesis: "蜀地不能只靠险要被动防守；如果只想自保，门户迟早会被打开。",
     posture: "攻取",
     strategicWeight: 89,
     defensibility: 83,
@@ -163,7 +163,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   湖广方舆纪要序: {
     summary: "辨析武昌、荆州、襄阳三要，最终突出襄阳为天下腰膂，武昌为东南上流，荆州为全楚之中。",
-    thesis: "楚地形势如鼎足，而襄阳最能决定东南存亡和北向进取。",
+    thesis: "楚地像三方支撑的要地，其中襄阳最能影响东南安危和北上进取。",
     posture: "攻守兼备",
     strategicWeight: 93,
     defensibility: 82,
@@ -179,7 +179,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   江西方舆纪要叙: {
     summary: "江西处江湖之间，承接吴楚、闽粤与上游，虽不为天下根本，却是东南运转和江防支撑。",
-    thesis: "江西的战略性在于转输、江湖与东南腹地的联络。",
+    thesis: "江西的重要性在于连接转运、水路和东南腹地，是交通和补给的关键环节。",
     posture: "守御",
     strategicWeight: 76,
     defensibility: 63,
@@ -194,7 +194,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   浙江方舆纪要叙: {
     summary: "浙江凭江海、山岭与财赋为东南重地，强在富庶与海防，弱在局促一隅。",
-    thesis: "浙江可为东南资储，不足独任天下攻守。",
+    thesis: "浙江能为东南提供财赋和物资，但不足以单独承担天下攻守的重任。",
     posture: "守御",
     strategicWeight: 72,
     defensibility: 66,
@@ -209,7 +209,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   福建方舆纪要叙: {
     summary: "福建山海阻隔，内足自保，外通海洋；其患与利都在海路、岛屿和闽粤交界。",
-    thesis: "福建险在山海，活路也在山海。",
+    thesis: "福建的险要来自山地和海路，它的出路也在山地通道和海上交通。",
     posture: "守御",
     strategicWeight: 70,
     defensibility: 80,
@@ -224,7 +224,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   广东方舆纪要叙: {
     summary: "广东远处岭南，却以海口、南越旧地和交广门户关系边海安全，是南疆联络的关键。",
-    thesis: "广东不在中原争衡中心，却是岭南和海路的门户。",
+    thesis: "广东不是中原争夺的中心，但它是岭南和海上交通的重要门户。",
     posture: "守御",
     strategicWeight: 74,
     defensibility: 68,
@@ -239,7 +239,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   广西方舆纪要叙: {
     summary: "广西联通湖广、广东、云南和交趾，重在边徼山路与羁縻控制，形势偏向边防治理。",
-    thesis: "广西的战略价值在通西南、制交趾、安诸峒。",
+    thesis: "广西的价值在于连接西南、牵制交趾，并稳定山地诸部。",
     posture: "守御",
     strategicWeight: 69,
     defensibility: 73,
@@ -254,7 +254,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   云南方舆纪要序: {
     summary: "云南处西南极边，山川环结，连接滇黔、巴蜀、交趾与缅甸，关键在远驭和边防。",
-    thesis: "云南贵在羁控西南门户，不能只作化外看待。",
+    thesis: "云南的关键作用是控制西南门户，不能把它简单看成边远地区。",
     posture: "守御",
     strategicWeight: 73,
     defensibility: 82,
@@ -269,7 +269,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   贵州方舆纪要叙: {
     summary: "贵州介于湖广、四川、云南、广西之间，虽山险地瘠，却是西南诸路的扣合之处。",
-    thesis: "贵州不是富庶腹地，而是西南通道的锁钥。",
+    thesis: "贵州不以富庶见长，但它卡住西南交通，是通道上的关键锁钥。",
     posture: "守御",
     strategicWeight: 71,
     defensibility: 79,
@@ -284,7 +284,7 @@ const analysisByTitle: Record<string, SectionAnalysis> = {
   },
   川渎异同序: {
     summary: "以川渎异同收束地理辨析，强调水道名称、源流和历史记载之间需要互证。",
-    thesis: "山川名实不可混同，地理判断必须先辨源流。",
+    thesis: "判断山川形势前，要先分清名称和实际源流，不能把不同水系混为一谈。",
     posture: "总论",
     strategicWeight: 66,
     defensibility: 55,
