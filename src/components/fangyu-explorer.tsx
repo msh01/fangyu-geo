@@ -55,6 +55,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
     return sections.filter((section) => {
       const haystack = [
         section.title,
+        section.displayTitle,
         section.text,
         section.analysis.summary,
         section.analysis.thesis,
@@ -107,7 +108,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
                     {section.order}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium">{section.title}</span>
+                    <span className="block truncate text-sm font-medium">{section.displayTitle}</span>
                     <span className={clsx("mt-1 block truncate text-xs", active ? "text-[#d7dfd7]" : "text-[#777a72]")}>
                       {section.analysis.thesis}
                     </span>
@@ -123,7 +124,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
             <div>
               <p className="font-mono text-sm text-[#7a3c2e]">{selected.analysis.posture}</p>
               <h2 className="mt-2 text-3xl font-semibold tracking-normal text-[#171916] md:text-4xl">
-                {selected.title}
+                {selected.displayTitle}
               </h2>
             </div>
             <div className="grid grid-cols-5 gap-2 lg:w-[520px]">
@@ -255,7 +256,7 @@ function StrategyMap({
           type: "Feature" as const,
           properties: {
             sectionId: section.id,
-            title: section.title,
+            title: section.displayTitle,
             name: place.name,
             role: place.role,
             active: section.id === selected.id,
@@ -460,7 +461,7 @@ function RelationGraph({ section }: { section: FangyuSection }) {
       {
         id: "section",
         position: { x: 280, y: 160 },
-        data: { label: section.title },
+        data: { label: section.displayTitle },
         style: {
           border: "2px solid #23382f",
           background: "#23382f",
@@ -659,7 +660,7 @@ function TimelineView({ sections, selected }: { sections: FangyuSection[]; selec
       grid: { left: 42, right: 24, top: 36, bottom: 72 },
       xAxis: {
         type: "category",
-        data: sections.map((section) => section.title.replace("方舆纪要", "")),
+        data: sections.map((section) => section.displayTitle.replace("地缘形势", "")),
         axisLabel: { rotate: 45, color: "#555951", interval: 0 },
         axisLine: { lineStyle: { color: "#aaa597" } },
       },

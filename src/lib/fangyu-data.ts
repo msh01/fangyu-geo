@@ -24,6 +24,7 @@ export type FangyuSection = {
   id: string;
   order: number;
   title: string;
+  displayTitle: string;
   text: string;
   excerpt: string;
   wordCount: number;
@@ -317,6 +318,30 @@ function sectionId(title: string, order: number) {
   return `${String(order).padStart(2, "0")}-${title.replace(/[^\p{Letter}\p{Number}]+/gu, "-")}`;
 }
 
+function toDisplayTitle(title: string) {
+  const displayTitles: Record<string, string> = {
+    历代州域形势纪要序: "历代州域形势",
+    北直方舆纪要序: "北直地缘形势",
+    南直方舆纪要序: "南直地缘形势",
+    山东方舆纪要序: "山东地缘形势",
+    山西方舆纪要序: "山西地缘形势",
+    河南方舆纪要序: "河南地缘形势",
+    陕西方舆纪要序: "陕西地缘形势",
+    四川方舆纪要叙: "四川地缘形势",
+    湖广方舆纪要序: "湖广地缘形势",
+    江西方舆纪要叙: "江西地缘形势",
+    浙江方舆纪要叙: "浙江地缘形势",
+    福建方舆纪要叙: "福建地缘形势",
+    广东方舆纪要叙: "广东地缘形势",
+    广西方舆纪要叙: "广西地缘形势",
+    云南方舆纪要序: "云南地缘形势",
+    贵州方舆纪要叙: "贵州地缘形势",
+    川渎异同序: "川渎源流辨析",
+  };
+
+  return displayTitles[title] ?? title.replace(/方舆纪要[序叙]$/, "地缘形势").replace(/[序叙]$/, "");
+}
+
 export function getFangyuSections(): FangyuSection[] {
   const sourcePath = path.join(process.cwd(), SOURCE_FILE);
   const markdown = readFileSync(sourcePath, "utf8").replace(/^\uFEFF/, "");
@@ -335,6 +360,7 @@ export function getFangyuSections(): FangyuSection[] {
       id: sectionId(title, order),
       order,
       title,
+      displayTitle: toDisplayTitle(title),
       text,
       excerpt: text.slice(0, 96),
       wordCount: Array.from(text.replace(/\s+/g, "")).length,
