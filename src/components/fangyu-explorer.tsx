@@ -551,7 +551,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           data: {
             label: (
               <div className="group relative flex flex-col items-center gap-1" title={modernRegion ? `今：${modernRegion}` : undefined}>
-                <span className="font-mono text-[11px] text-black/70">{node.kind}</span>
+                <span className="text-[11px] text-black/70">{style.label}</span>
                 <strong className="text-base">{node.label}</strong>
                 <span className="max-w-[120px] truncate text-[11px] text-[#171916] opacity-80 [text-shadow:0_1px_0_rgba(255,255,255,0.72),0_-1px_0_rgba(255,255,255,0.72),1px_0_0_rgba(255,255,255,0.72),-1px_0_0_rgba(255,255,255,0.72)]">
                   {node.note}
