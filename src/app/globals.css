@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+:root {
+  --background: #f7f7f4;
+  --foreground: #202320;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), "Noto Sans SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.maplibregl-ctrl button {
+  border-radius: 0;
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+.prose-fangyu {
+  color: #202320;
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size: 19px;
+  line-height: 2.15;
+}
+
+.prose-fangyu p + p {
+  margin-top: 1.1em;
+}
+
+.prose-fangyu mark {
+  background: #f4c66f;
+  color: #171916;
+  padding: 0 0.1em;
+}
