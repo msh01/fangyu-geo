@@ -11,7 +11,7 @@ import {
   type Edge,
   type Node,
 } from "@xyflow/react";
-import { BookOpenText, BrainCircuit, GitBranch, Map, Search, Sparkles, Timer } from "lucide-react";
+import { BookOpenText, BrainCircuit, ExternalLink, GitBranch, Map, Search, Sparkles, Timer } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { clsx } from "clsx";
 import type { EChartsOption } from "echarts";
@@ -40,6 +40,22 @@ function ModernRegionLine({ name }: { name: string }) {
   if (!region) return null;
 
   return <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{region}</p>;
+}
+
+function GitHubLink() {
+  return (
+    <a
+      href="https://github.com/msh01/fangyu-geo"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="GitHub 仓库"
+      title="GitHub 仓库"
+      className="inline-flex h-10 items-center justify-center gap-2 border border-[#cfcbbf] bg-white px-3 text-sm text-[#30342f] transition hover:border-[#769173] hover:bg-[#eef3ea]"
+    >
+      <ExternalLink size={16} />
+      GitHub 仓库
+    </a>
+  );
 }
 
 export function FangyuExplorer({ sections }: FangyuExplorerProps) {
@@ -164,6 +180,9 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
             {view === "timeline" && <TimelineView sections={sections} selected={selected} />}
             {view === "text" && <TextView section={selected} query={query} />}
           </div>
+          <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-5 py-5">
+            <GitHubLink />
+          </footer>
         </section>
 
         <aside className="border-t border-[#dad7cb] bg-[#fbfaf6] xl:border-l xl:border-t-0">
