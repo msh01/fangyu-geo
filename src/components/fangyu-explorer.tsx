@@ -102,7 +102,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
         <aside className="border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
           <div className="px-5 py-5">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-[#7a3c2e]">Fangyu Geo</p>
-            <h1 className="mt-3 text-3xl font-semibold leading-tight text-[#171916]">读史方舆纪要</h1>
+            <h1 className="mt-3 text-3xl font-semibold leading-tight text-[#171916]">古代地缘形势推演</h1>
             <div className="mt-5 flex h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3">
               <Search size={17} className="text-[#7b7d74]" />
               <input
@@ -122,18 +122,10 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
                   key={section.id}
                   onClick={() => setSelectedId(section.id)}
                   className={clsx(
-                    "grid w-full grid-cols-[38px_minmax(0,1fr)] gap-3 border-b border-[#e9e5da] px-5 py-4 text-left transition",
+                    "block w-full border-b border-[#e9e5da] px-5 py-4 text-left transition",
                     active ? "bg-[#23382f] text-white" : "bg-transparent hover:bg-[#eef3ea]",
                   )}
                 >
-                  <span
-                    className={clsx(
-                      "flex h-8 w-8 items-center justify-center border font-mono text-xs",
-                      active ? "border-[#d1a15f] text-[#f2c77d]" : "border-[#cfcbbf] text-[#7a3c2e]",
-                    )}
-                  >
-                    {section.order}
-                  </span>
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">{section.displayTitle}</span>
                     <span className={clsx("mt-1 block truncate text-xs", active ? "text-[#d7dfd7]" : "text-[#777a72]")}>
