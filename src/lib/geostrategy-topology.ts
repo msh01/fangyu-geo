@@ -10,6 +10,8 @@ export type TopologyNode = {
   kind: TopologyNodeKind;
   x: number;
   y: number;
+  longitude?: number;
+  latitude?: number;
   note: string;
   evidence: string;
   modern?: string;
@@ -41,23 +43,134 @@ type ModelSeed = {
   edges: Array<Omit<TopologyEdge, "id">>;
 };
 
-const layout = [
-  [560, 320],
-  [510, 95],
-  [770, 210],
-  [750, 515],
-  [380, 540],
-  [300, 260],
-  [560, 610],
-] as const;
+type GeoPoint = {
+  longitude: number;
+  latitude: number;
+};
+
+const topologyGeoByLabel: Record<string, GeoPoint> = {
+  "北京/燕京": { longitude: 116.4, latitude: 39.9 },
+  开平: { longitude: 116.1, latitude: 42.2 },
+  辽阳: { longitude: 123.2, latitude: 41.3 },
+  大宁: { longitude: 119.0, latitude: 41.6 },
+  沙碛北边: { longitude: 111.0, latitude: 43.8 },
+  中原: { longitude: 113.6, latitude: 34.8 },
+  南京: { longitude: 118.8, latitude: 32.1 },
+  江汉: { longitude: 112.6, latitude: 30.7 },
+  淮泗: { longitude: 117.0, latitude: 33.2 },
+  "采石/长江": { longitude: 118.5, latitude: 31.7 },
+  江淮财赋: { longitude: 119.0, latitude: 32.3 },
+  山东: { longitude: 118.0, latitude: 36.6 },
+  漕渠: { longitude: 116.9, latitude: 35.7 },
+  登莱: { longitude: 120.8, latitude: 37.6 },
+  京师: { longitude: 116.4, latitude: 39.9 },
+  齐鲁: { longitude: 118.0, latitude: 36.7 },
+  岛屿蜂起: { longitude: 121.4, latitude: 37.2 },
+  山西: { longitude: 112.6, latitude: 37.8 },
+  雁门: { longitude: 112.9, latitude: 39.1 },
+  太行: { longitude: 113.7, latitude: 36.9 },
+  关中: { longitude: 108.9, latitude: 34.4 },
+  河北: { longitude: 114.5, latitude: 37.8 },
+  大漠: { longitude: 111.5, latitude: 42.0 },
+  河南: { longitude: 113.6, latitude: 34.7 },
+  洛阳: { longitude: 112.4, latitude: 34.7 },
+  开封: { longitude: 114.3, latitude: 34.8 },
+  "南阳/宛": { longitude: 112.5, latitude: 32.9 },
+  陕西: { longitude: 108.9, latitude: 34.3 },
+  陇右: { longitude: 105.7, latitude: 35.1 },
+  汉中: { longitude: 107.0, latitude: 33.1 },
+  河西: { longitude: 98.2, latitude: 39.8 },
+  边卒悍起: { longitude: 106.7, latitude: 37.0 },
+  成都: { longitude: 104.1, latitude: 30.7 },
+  剑阁: { longitude: 105.5, latitude: 32.3 },
+  瞿塘: { longitude: 109.6, latitude: 31.0 },
+  分道入蜀: { longitude: 107.8, latitude: 32.6 },
+  襄阳: { longitude: 112.1, latitude: 32.0 },
+  武昌: { longitude: 114.3, latitude: 30.6 },
+  荆州: { longitude: 112.2, latitude: 30.3 },
+  江西: { longitude: 115.9, latitude: 27.6 },
+  鄱阳湖: { longitude: 116.3, latitude: 29.0 },
+  赣江: { longitude: 115.8, latitude: 27.8 },
+  "武昌/上游": { longitude: 114.3, latitude: 30.6 },
+  闽粤: { longitude: 117.2, latitude: 24.8 },
+  江湖断裂: { longitude: 116.0, latitude: 29.5 },
+  浙江: { longitude: 120.2, latitude: 29.2 },
+  "杭州/钱塘": { longitude: 120.2, latitude: 30.3 },
+  宁波: { longitude: 121.6, latitude: 29.9 },
+  江淮: { longitude: 118.2, latitude: 32.2 },
+  财赋: { longitude: 120.1, latitude: 30.0 },
+  海上扰动: { longitude: 123.1, latitude: 28.7 },
+  福建: { longitude: 118.3, latitude: 26.1 },
+  福州: { longitude: 119.3, latitude: 26.1 },
+  泉州: { longitude: 118.7, latitude: 24.9 },
+  闽山: { longitude: 117.7, latitude: 26.3 },
+  闽粤通道: { longitude: 117.1, latitude: 24.4 },
+  海岛扰动: { longitude: 120.3, latitude: 25.2 },
+  广东: { longitude: 113.3, latitude: 23.1 },
+  广州: { longitude: 113.3, latitude: 23.1 },
+  韶关: { longitude: 113.6, latitude: 24.8 },
+  海口: { longitude: 113.9, latitude: 22.5 },
+  交趾: { longitude: 105.8, latitude: 21.0 },
+  南越旧地: { longitude: 111.0, latitude: 22.7 },
+  广西: { longitude: 108.3, latitude: 23.8 },
+  桂林: { longitude: 110.3, latitude: 25.3 },
+  南宁: { longitude: 108.4, latitude: 22.8 },
+  云南: { longitude: 102.7, latitude: 25.0 },
+  诸峒: { longitude: 109.4, latitude: 25.0 },
+  昆明: { longitude: 102.8, latitude: 25.0 },
+  大理: { longitude: 100.2, latitude: 25.6 },
+  "缅甸/外夷": { longitude: 98.8, latitude: 24.6 },
+  贵州: { longitude: 106.7, latitude: 26.8 },
+  贵阳: { longitude: 106.6, latitude: 26.6 },
+  遵义: { longitude: 106.9, latitude: 27.7 },
+  湖广: { longitude: 112.8, latitude: 29.8 },
+  苗疆: { longitude: 108.3, latitude: 26.6 },
+};
+
+function resolveNodeGeo(label: string): GeoPoint | undefined {
+  return topologyGeoByLabel[label];
+}
 
 function makeModel(seed: ModelSeed): TopologyModel {
-  const nodes = seed.nodes.map((node, index) => ({
-    ...node,
-    x: layout[index]?.[0] ?? 560,
-    y: layout[index]?.[1] ?? 320,
-    modern: node.modern ?? getModernRegion(node.label),
-  }));
+  const geoNodes = seed.nodes.map((node) => {
+    const geo = resolveNodeGeo(node.label);
+    return {
+      ...node,
+      longitude: geo?.longitude,
+      latitude: geo?.latitude,
+      modern: node.modern ?? getModernRegion(node.label),
+    };
+  });
+
+  const geoPoints = geoNodes.filter(
+    (node): node is typeof node & Required<Pick<TopologyNode, "longitude" | "latitude">> =>
+      typeof node.longitude === "number" && typeof node.latitude === "number",
+  );
+  const minLongitude = geoPoints.length > 0 ? Math.min(...geoPoints.map((node) => node.longitude)) : 100;
+  const maxLongitude = geoPoints.length > 0 ? Math.max(...geoPoints.map((node) => node.longitude)) : 120;
+  const minLatitude = geoPoints.length > 0 ? Math.min(...geoPoints.map((node) => node.latitude)) : 20;
+  const maxLatitude = geoPoints.length > 0 ? Math.max(...geoPoints.map((node) => node.latitude)) : 42;
+  const longitudeSpan = Math.max(maxLongitude - minLongitude, 1);
+  const latitudeSpan = Math.max(maxLatitude - minLatitude, 1);
+
+  const nodes = geoNodes.map((node, index) => {
+    const fallbackX = 560 + Math.cos((index / Math.max(seed.nodes.length, 1)) * Math.PI * 2) * 220;
+    const fallbackY = 320 + Math.sin((index / Math.max(seed.nodes.length, 1)) * Math.PI * 2) * 170;
+    const x =
+      typeof node.longitude === "number"
+        ? 180 + ((node.longitude - minLongitude) / longitudeSpan) * 640
+        : fallbackX;
+    const y =
+      typeof node.latitude === "number"
+        ? 110 + ((maxLatitude - node.latitude) / latitudeSpan) * 430
+        : fallbackY;
+
+    return {
+      ...node,
+      x,
+      y,
+    };
+  });
 
   return {
     title: seed.title,
