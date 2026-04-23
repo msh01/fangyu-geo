@@ -12,7 +12,7 @@ import {
   type Node,
 } from "@xyflow/react";
 import { BookOpenText, BrainCircuit, ExternalLink, GitBranch, Map, Search, Timer } from "lucide-react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
 import type { EChartsOption } from "echarts";
 import type { ComponentType } from "react";
@@ -138,7 +138,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
           </nav>
         </aside>
 
-        <section className="min-w-0">
+        <section className="flex min-h-screen min-w-0 flex-col">
           <div className="flex flex-col gap-5 border-b border-[#dad7cb] bg-[#fdfcf8] px-5 py-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="font-mono text-sm text-[#7a3c2e]">{selected.analysis.posture}</p>
@@ -169,7 +169,7 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
             </div>
           </div>
 
-          <div className="min-h-[640px] p-4 md:p-6">
+          <div className="min-h-0 flex-1 p-4 md:p-6">
             {view === "map" && <StrategyMap sections={sections} selected={selected} onSelect={setSelectedId} />}
             {view === "topology" && <TopologySimulation section={selected} />}
             {view === "graph" && <RelationGraph section={selected} />}
@@ -521,16 +521,66 @@ const edgeStyleByKind: Record<TopologyEdgeKind, { color: string; dash?: string; 
 
 function TopologySimulation({ section }: { section: FangyuSection }) {
   const model = useMemo(() => getTopologyModel(section), [section]);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [viewportSize, setViewportSize] = useState({ width: 1100, height: 600 });
+
+  useEffect(() => {
+    if (!viewportRef.current) return;
+
+    const element = viewportRef.current;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      setViewportSize({
+        width: Math.max(width, 760),
+        height: Math.max(height, 520),
+      });
+    });
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const scaledLayout = useMemo(() => {
+    const xs = model.nodes.map((node) => node.x);
+    const ys = model.nodes.map((node) => node.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const spanX = Math.max(maxX - minX, 1);
+    const spanY = Math.max(maxY - minY, 1);
+    const padX = Math.max(viewportSize.width * 0.12, 90);
+    const padY = Math.max(viewportSize.height * 0.12, 72);
+    const usableWidth = Math.max(viewportSize.width - padX * 2, 320);
+    const usableHeight = Math.max(viewportSize.height - padY * 2, 240);
+    const scale = Math.min(1.28, Math.max(0.92, Math.min(usableWidth / 760, usableHeight / 520)));
+
+    return {
+      positions: Object.fromEntries(
+        model.nodes.map((node) => [
+          node.id,
+          {
+            x: padX + ((node.x - minX) / spanX) * usableWidth,
+            y: padY + ((node.y - minY) / spanY) * usableHeight,
+          },
+        ]),
+      ) as Record<string, { x: number; y: number }>,
+      scale,
+    };
+  }, [model.nodes, viewportSize.height, viewportSize.width]);
 
   const nodes = useMemo<Node[]>(
     () =>
       model.nodes.map((node) => {
         const style = nodeStyleByKind[node.kind];
-        const size = node.kind === "core" ? 86 : 72;
+        const position = scaledLayout.positions[node.id] ?? { x: node.x, y: node.y };
+        const size = Math.round((node.kind === "core" ? 86 : 72) * scaledLayout.scale);
         const modernRegion = getModernRegionLabel(node.label);
         return {
           id: node.id,
-          position: { x: node.x, y: node.y },
+          position,
           data: {
             label: (
               <div className="group relative flex flex-col items-center gap-1" title={modernRegion ? `今：${modernRegion}` : undefined}>
@@ -559,7 +609,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           },
         };
       }),
-    [model],
+    [model, scaledLayout],
   );
 
   const edges = useMemo<Edge[]>(
@@ -593,8 +643,8 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
   );
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
-      <div className="overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
+    <div className="grid h-full min-h-[620px] gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="flex min-h-0 flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
         <div className="flex items-start justify-between gap-4 px-1 pb-4">
           <div className="max-w-3xl">
             <p className="text-sm text-[#7a3c2e]">核心判断</p>
@@ -605,13 +655,18 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
             <p className="font-semibold">地缘战略</p>
           </div>
         </div>
-        <div className="h-[600px] rounded-[8px] border border-[#d9dce4] bg-white">
-          <ReactFlow nodes={nodes} edges={edges} fitView minZoom={0.45} maxZoom={1.55} nodesDraggable>
+        <div ref={viewportRef} className="min-h-[520px] flex-1 rounded-[8px] border border-[#d9dce4] bg-white">
+          <ReactFlow
+            key={`${section.id}-${Math.round(viewportSize.width)}-${Math.round(viewportSize.height)}`}
+            nodes={nodes}
+            edges={edges}
+            fitView
+            fitViewOptions={{ padding: 0.12 }}
+            minZoom={0.45}
+            maxZoom={1.55}
+            nodesDraggable
+          >
             <Background color="#d7dce5" gap={32} />
-            <MiniMap nodeColor={(node) => {
-              const modelNode = model.nodes.find((item) => item.id === node.id);
-              return modelNode ? nodeStyleByKind[modelNode.kind].fill : "#769173";
-            }} />
             <Controls />
           </ReactFlow>
         </div>
