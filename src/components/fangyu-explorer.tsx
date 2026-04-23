@@ -604,6 +604,7 @@ function TimelineView({ sections, selected }: { sections: FangyuSection[]; selec
     () => ({
       backgroundColor: "transparent",
       color: ["#23382f", "#b84b36", "#769173", "#d1a15f"],
+      textStyle: { fontFamily: "LXGW WenKai, 霞鹜文楷, Microsoft YaHei, sans-serif" },
       tooltip: { trigger: "axis" },
       legend: { bottom: 0, textStyle: { color: "#30342f" } },
       grid: { left: 42, right: 24, top: 36, bottom: 72 },

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "maplibre-gl/dist/maplibre-gl.css";
+@import "@fontsource/lxgw-wenkai/300.css";
+@import "@fontsource/lxgw-wenkai/500.css";
+@import "@fontsource/lxgw-wenkai/700.css";
 
 :root {
   --background: #f7f7f4;
@@ -9,14 +12,15 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), "Noto Sans SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+  font-family: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
 }
 
 button,
@@ -34,7 +38,7 @@ input {
 
 .prose-fangyu {
   color: #202320;
-  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-family: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
   font-size: 19px;
   line-height: 2.15;
 }

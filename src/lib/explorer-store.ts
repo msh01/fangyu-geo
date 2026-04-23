@@ -16,7 +16,7 @@ type ExplorerState = {
 export const useExplorerStore = create<ExplorerState>((set) => ({
   query: "",
   selectedId: null,
-  view: "map",
+  view: "topology",
   setQuery: (query) => set({ query }),
   setSelectedId: (selectedId) => set({ selectedId }),
   setView: (view) => set({ view }),
