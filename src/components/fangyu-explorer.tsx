@@ -8,6 +8,8 @@ import {
   MarkerType,
   MiniMap,
   ReactFlow,
+  useEdgesState,
+  useNodesState,
   type Edge,
   type Node,
 } from "@xyflow/react";
@@ -571,7 +573,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
     };
   }, [model.nodes, viewportSize.height, viewportSize.width]);
 
-  const nodes = useMemo<Node[]>(
+  const initialNodes = useMemo<Node[]>(
     () =>
       model.nodes.map((node) => {
         const style = nodeStyleByKind[node.kind];
@@ -612,7 +614,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
     [model, scaledLayout],
   );
 
-  const edges = useMemo<Edge[]>(
+  const initialEdges = useMemo<Edge[]>(
     () =>
       model.edges.map((edge) => {
         const style = edgeStyleByKind[edge.kind];
@@ -642,6 +644,17 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
     [model],
   );
 
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
+
   return (
     <div className="grid h-full min-h-[620px] gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="flex min-h-0 flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
@@ -660,6 +673,8 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
             key={`${section.id}-${Math.round(viewportSize.width)}-${Math.round(viewportSize.height)}`}
             nodes={nodes}
             edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
             fitView
             fitViewOptions={{ padding: 0.12 }}
             minZoom={0.45}
