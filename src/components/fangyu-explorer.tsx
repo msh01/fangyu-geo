@@ -36,10 +36,14 @@ const viewItems: Array<{ id: ExplorerView; label: string; icon: ComponentType<{ 
 ];
 
 function ModernRegionLine({ name }: { name: string }) {
-  const region = getModernRegion(name)?.replace(/^今[：:\s]*/, "");
+  const region = getModernRegionLabel(name);
   if (!region) return null;
 
   return <p className="mt-0.5 text-xs leading-5 text-[#8a5d3b]">今：{region}</p>;
+}
+
+function getModernRegionLabel(name: string) {
+  return getModernRegion(name)?.replace(/^今[：:\s]*/, "");
 }
 
 function GitHubLink() {
@@ -548,15 +552,21 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
       model.nodes.map((node) => {
         const style = nodeStyleByKind[node.kind];
         const size = node.kind === "core" ? 86 : 72;
+        const modernRegion = getModernRegionLabel(node.label);
         return {
           id: node.id,
           position: { x: node.x, y: node.y },
           data: {
             label: (
-              <div className="flex flex-col items-center gap-1">
+              <div className="group relative flex flex-col items-center gap-1" title={modernRegion ? `今：${modernRegion}` : undefined}>
                 <span className="font-mono text-[11px] text-black/70">{node.kind}</span>
                 <strong className="text-base">{node.label}</strong>
                 <span className="max-w-[120px] truncate text-[11px] opacity-80">{node.note}</span>
+                {modernRegion && (
+                  <span className="pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap border border-[#cfcbbf] bg-[#fffdf7] px-2.5 py-1 text-xs font-medium text-[#30342f] opacity-0 shadow-sm transition group-hover:opacity-100">
+                    今：{modernRegion}
+                  </span>
+                )}
               </div>
             ),
           },
