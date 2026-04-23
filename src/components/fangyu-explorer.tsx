@@ -236,19 +236,6 @@ function AnalysisPanel({ section }: { section: FangyuSection }) {
       </div>
 
       <div className="mt-6">
-        <p className="text-sm text-[#777a72]">地理节点</p>
-        <div className="mt-3 space-y-3">
-          {section.analysis.places.map((place) => (
-            <div key={place.name} className="border-l-2 border-[#b84b36] bg-white px-3 py-2">
-              <p className="font-medium text-[#171916]">{place.name}</p>
-              <ModernRegionLine name={place.name} />
-              <p className="mt-1 text-sm leading-6 text-[#686b64]">{place.role}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6">
         <p className="text-sm text-[#777a72]">原文入口</p>
         <p className="mt-2 text-sm leading-7 text-[#555951]">{section.excerpt}...</p>
       </div>
