@@ -57,7 +57,7 @@ function GitHubLink() {
       rel="noreferrer"
       aria-label="GitHub 仓库"
       title="GitHub 仓库"
-      className="inline-flex h-10 items-center justify-center gap-2 border border-[#cfcbbf] bg-white px-3 text-sm text-[#30342f] transition hover:border-[#769173] hover:bg-[#eef3ea]"
+      className="inline-flex h-10 w-full items-center justify-center gap-2 border border-[#cfcbbf] bg-white px-3 text-sm text-[#30342f] transition hover:border-[#769173] hover:bg-[#eef3ea] sm:w-auto"
     >
       <ExternalLink size={16} />
       GitHub 仓库
@@ -108,10 +108,10 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
     <main className="min-h-screen bg-[#f7f7f4] text-[#202320]">
       <div className="grid min-h-screen grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_360px]">
         <aside className="border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
-          <div className="px-5 py-5">
+          <div className="px-4 py-4 sm:px-5 sm:py-5">
             <p className="text-xs tracking-[0.22em] text-[#7a3c2e]">形势推演</p>
-            <h1 className="mt-3 text-2xl font-semibold leading-tight text-[#171916]">古代地缘形势推演</h1>
-            <div className="mt-5 flex h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3">
+            <h1 className="mt-3 text-xl font-semibold leading-tight text-[#171916] sm:text-2xl">古代地缘形势推演</h1>
+            <div className="mt-4 flex h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3 sm:mt-5">
               <Search size={17} className="text-[#7b7d74]" />
               <input
                 value={query}
@@ -122,7 +122,7 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
             </div>
           </div>
 
-          <nav className="max-h-[42vh] overflow-y-auto border-t border-[#e2dfd3] xl:max-h-[calc(100vh-166px)]">
+          <nav className="max-h-[36vh] overflow-y-auto border-t border-[#e2dfd3] sm:max-h-[42vh] xl:max-h-[calc(100vh-166px)]">
             {filteredSections.map((section) => {
               const active = section.id === selected.id;
               return (
@@ -130,7 +130,7 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
                   key={section.id}
                   onClick={() => setSelectedId(section.id)}
                   className={clsx(
-                    "block w-full border-b border-[#e9e5da] px-5 py-4 text-left transition",
+                    "block w-full border-b border-[#e9e5da] px-4 py-3 text-left transition sm:px-5 sm:py-4",
                     active ? "bg-[#23382f] text-white" : "bg-transparent hover:bg-[#eef3ea]",
                   )}
                 >
@@ -147,14 +147,14 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
         </aside>
 
         <section className="flex min-h-screen min-w-0 flex-col">
-          <div className="flex flex-col gap-5 border-b border-[#dad7cb] bg-[#fdfcf8] px-5 py-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-4 border-b border-[#dad7cb] bg-[#fdfcf8] px-4 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="font-mono text-sm text-[#7a3c2e]">{selected.analysis.posture}</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-normal text-[#171916]">
+              <h2 className="mt-2 text-2xl font-semibold tracking-normal text-[#171916] sm:text-3xl">
                 {selected.displayTitle}
               </h2>
             </div>
-            <div className="grid grid-cols-5 gap-2 lg:w-[520px]">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:w-[520px]">
               {viewItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -163,14 +163,14 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
                     onClick={() => setView(item.id)}
                     title={item.label}
                     className={clsx(
-                      "flex h-12 items-center justify-center gap-2 border text-sm font-medium transition",
+                      "flex h-12 items-center justify-center gap-2 border px-2 text-sm font-medium transition",
                       view === item.id
                         ? "border-[#b84b36] bg-[#b84b36] text-white"
                         : "border-[#cfcbbf] bg-white text-[#30342f] hover:border-[#769173]",
                     )}
                   >
                     <Icon size={17} />
-                    <span className="hidden sm:inline">{item.label}</span>
+                    <span className="text-xs sm:text-sm">{item.label}</span>
                   </button>
                 );
               })}
@@ -186,7 +186,7 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
             {view === "timeline" && <TimelineView sections={navigableSections} selected={selected} />}
             {view === "text" && <TextView section={selected} query={query} />}
           </div>
-          <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-5 py-5">
+          <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-4 py-4 sm:px-5 sm:py-5">
             <GitHubLink />
           </footer>
         </section>
@@ -208,11 +208,11 @@ function AnalysisPanel({ section, view }: { section: FangyuSection; view: Explor
   ] as const;
 
   return (
-    <div className="sticky top-0 max-h-screen overflow-y-auto px-5 py-5">
+    <div className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 xl:sticky xl:top-0 xl:max-h-screen">
       {view !== "topology" && (
         <div className="border-b border-[#dad7cb] pb-5">
           <p className="text-sm text-[#777a72]">核心判断</p>
-          <p className="mt-2 text-xl font-semibold leading-8 text-[#171916]">{section.analysis.thesis}</p>
+          <p className="mt-2 text-lg font-semibold leading-8 text-[#171916] sm:text-xl">{section.analysis.thesis}</p>
         </div>
       )}
 
@@ -426,7 +426,7 @@ function StrategyMap({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-      <div className="h-[620px] overflow-hidden border border-[#cfcbbf] bg-[#e8eadf]">
+      <div className="h-[360px] overflow-hidden border border-[#cfcbbf] bg-[#e8eadf] sm:h-[460px] lg:h-[620px]">
         <div ref={containerRef} className="h-full w-full" />
       </div>
       <div className="border border-[#dad7cb] bg-white p-4">
@@ -504,7 +504,7 @@ function RelationGraph({ section }: { section: FangyuSection }) {
   );
 
   return (
-    <div className="h-[620px] border border-[#cfcbbf] bg-white">
+    <div className="h-[360px] border border-[#cfcbbf] bg-white sm:h-[460px] lg:h-[620px]">
       <ReactFlow nodes={nodes} edges={edges} fitView minZoom={0.45} maxZoom={1.4}>
         <Background color="#d7d3c6" gap={28} />
         <MiniMap nodeColor={(node) => (node.id === "section" ? "#23382f" : "#769173")} />
@@ -536,6 +536,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
   const model = useMemo(() => getTopologyModel(section), [section]);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [viewportSize, setViewportSize] = useState({ width: 1100, height: 600 });
+  const isCompactTopology = viewportSize.width < 640;
 
   useEffect(() => {
     if (!viewportRef.current) return;
@@ -546,8 +547,8 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
       if (!entry) return;
       const { width, height } = entry.contentRect;
       setViewportSize({
-        width: Math.max(width, 760),
-        height: Math.max(height, 520),
+        width: Math.max(width, 320),
+        height: Math.max(height, width < 640 ? 760 : 420),
       });
     });
 
@@ -564,11 +565,13 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
     const maxY = Math.max(...ys);
     const spanX = Math.max(maxX - minX, 1);
     const spanY = Math.max(maxY - minY, 1);
-    const padX = Math.max(viewportSize.width * 0.12, 90);
-    const padY = Math.max(viewportSize.height * 0.12, 72);
-    const usableWidth = Math.max(viewportSize.width - padX * 2, 320);
-    const usableHeight = Math.max(viewportSize.height - padY * 2, 240);
-    const scale = Math.min(1.28, Math.max(0.92, Math.min(usableWidth / 760, usableHeight / 520)));
+    const padX = isCompactTopology ? Math.max(viewportSize.width * 0.1, 28) : Math.max(viewportSize.width * 0.12, 90);
+    const padY = isCompactTopology ? Math.max(viewportSize.height * 0.08, 42) : Math.max(viewportSize.height * 0.12, 72);
+    const usableWidth = Math.max(viewportSize.width - padX * 2, isCompactTopology ? 260 : 220);
+    const usableHeight = Math.max(viewportSize.height - padY * 2, isCompactTopology ? 620 : 240);
+    const scale = isCompactTopology
+      ? Math.min(1.02, Math.max(0.82, Math.min(usableWidth / 620, usableHeight / 980)))
+      : Math.min(1.28, Math.max(0.6, Math.min(usableWidth / 760, usableHeight / 520)));
 
     return {
       positions: Object.fromEntries(
@@ -576,26 +579,38 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           node.id,
           {
             x: padX + ((node.x - minX) / spanX) * usableWidth,
-            y: padY + ((node.y - minY) / spanY) * usableHeight,
+            y: isCompactTopology
+              ? padY + ((node.y - minY) / spanY) * usableHeight
+              : padY + ((node.y - minY) / spanY) * usableHeight,
           },
         ]),
       ) as Record<string, { x: number; y: number }>,
       scale,
     };
-  }, [model.nodes, viewportSize.height, viewportSize.width]);
+  }, [isCompactTopology, model.nodes, viewportSize.height, viewportSize.width]);
 
   const initialNodes = useMemo<Node[]>(
     () =>
       model.nodes.map((node) => {
         const style = nodeStyleByKind[node.kind];
         const position = scaledLayout.positions[node.id] ?? { x: node.x, y: node.y };
-        const size = Math.round((node.kind === "core" ? 86 : 72) * scaledLayout.scale);
+        const size = Math.max(isCompactTopology ? 56 : 52, Math.round((node.kind === "core" ? 86 : 72) * scaledLayout.scale));
         const modernRegion = getModernRegionLabel(node.label);
         return {
           id: node.id,
           position,
           data: {
-            label: (
+            label: isCompactTopology ? (
+              <div className="group relative flex flex-col items-center gap-0.5" title={modernRegion ? `今：${modernRegion}` : undefined}>
+                <span className="text-[10px] text-black/70">{style.label}</span>
+                <strong className="text-sm">{node.label}</strong>
+                {modernRegion && (
+                  <span className="pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap border border-[#cfcbbf] bg-[#fffdf7] px-2.5 py-1 text-xs font-medium text-[#30342f] opacity-0 shadow-sm transition group-hover:opacity-100">
+                    今：{modernRegion}
+                  </span>
+                )}
+              </div>
+            ) : (
               <div className="group relative flex flex-col items-center gap-1" title={modernRegion ? `今：${modernRegion}` : undefined}>
                 <span className="text-[11px] text-black/70">{style.label}</span>
                 <strong className="text-base">{node.label}</strong>
@@ -622,7 +637,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           },
         };
       }),
-    [model, scaledLayout],
+    [isCompactTopology, model, scaledLayout],
   );
 
   const initialEdges = useMemo<Edge[]>(
@@ -633,7 +648,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           id: edge.id,
           source: edge.source,
           target: edge.target,
-          label: `${edge.label} (${edge.pressure}%)`,
+          label: isCompactTopology ? undefined : `${edge.label} (${edge.pressure}%)`,
           markerEnd: { type: MarkerType.ArrowClosed, color: style.color },
           animated: edge.kind === "threaten" || edge.kind === "offense",
           style: {
@@ -652,7 +667,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           labelBgPadding: [5, 3],
         };
       }),
-    [model],
+    [isCompactTopology, model],
   );
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -667,19 +682,19 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
   }, [initialEdges, setEdges]);
 
   return (
-    <div className="grid h-full min-h-[620px] gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <div className="grid h-full min-h-[480px] gap-4 lg:min-h-[620px] lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="flex min-h-0 flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
-        <div className="flex items-start justify-between gap-4 px-1 pb-4">
+        <div className="flex flex-col items-start justify-between gap-3 px-1 pb-4 sm:flex-row sm:gap-4">
           <div className="max-w-3xl">
             <p className="text-sm text-[#7a3c2e]">核心判断</p>
-            <h3 className="mt-1 text-xl font-semibold leading-8 text-[#171916]">{section.analysis.thesis}</h3>
+            <h3 className="mt-1 text-lg font-semibold leading-8 text-[#171916] sm:text-xl">{section.analysis.thesis}</h3>
           </div>
-          <div className="text-right text-sm leading-6 text-[#30342f]">
+          <div className="text-left text-sm leading-6 text-[#30342f] sm:text-right">
             <p>分析维度</p>
             <p className="font-semibold">地缘战略</p>
           </div>
         </div>
-        <div ref={viewportRef} className="min-h-[520px] flex-1 rounded-[8px] border border-[#d9dce4] bg-white">
+        <div ref={viewportRef} className="min-h-[760px] flex-1 rounded-[8px] border border-[#d9dce4] bg-white sm:min-h-[520px]">
           <ReactFlow
             key={`${section.id}-${Math.round(viewportSize.width)}-${Math.round(viewportSize.height)}`}
             nodes={nodes}
@@ -687,7 +702,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             fitView
-            fitViewOptions={{ padding: 0.12 }}
+            fitViewOptions={{ padding: isCompactTopology ? 0.08 : 0.12 }}
             minZoom={0.45}
             maxZoom={1.55}
             nodesDraggable
@@ -785,7 +800,7 @@ function TimelineView({ sections, selected }: { sections: FangyuSection[]; selec
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
-      <div className="h-[620px] border border-[#cfcbbf] bg-white p-3">
+      <div className="h-[360px] border border-[#cfcbbf] bg-white p-3 sm:h-[460px] lg:h-[620px]">
         <ReactECharts option={option} style={{ height: "100%", width: "100%" }} />
       </div>
       <div className="border border-[#dad7cb] bg-white p-4">
@@ -837,7 +852,7 @@ function TextView({ section, query }: { section: FangyuSection; query: string })
   }, [query, section.text]);
 
   return (
-    <article className="border border-[#cfcbbf] bg-white px-5 py-6 md:px-10 md:py-9">
+    <article className="border border-[#cfcbbf] bg-white px-4 py-5 sm:px-5 md:px-10 md:py-9">
       <div className="prose-fangyu">{paragraphs}</div>
     </article>
   );

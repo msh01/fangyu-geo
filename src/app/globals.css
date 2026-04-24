@@ -39,8 +39,15 @@ input {
 .prose-fangyu {
   color: #202320;
   font-family: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
-  font-size: 19px;
-  line-height: 2.15;
+  font-size: 17px;
+  line-height: 1.95;
+}
+
+@media (min-width: 640px) {
+  .prose-fangyu {
+    font-size: 19px;
+    line-height: 2.15;
+  }
 }
 
 .prose-fangyu p + p {
