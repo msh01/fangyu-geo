@@ -2,6 +2,7 @@
 
 import "@xyflow/react/dist/style.css";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import {
   Background,
   Controls,
@@ -14,13 +15,14 @@ import {
   type Node,
 } from "@xyflow/react";
 import { BookOpenText, BrainCircuit, ExternalLink, GitBranch, Map, Search, Timer } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
 import type { EChartsOption } from "echarts";
 import type { ComponentType } from "react";
 import type { FangyuSection } from "@/lib/fangyu-data";
 import { getTopologyModel, type TopologyEdgeKind, type TopologyNodeKind } from "@/lib/geostrategy-topology";
 import { getModernRegion } from "@/lib/place-modern";
+import { getSectionPath } from "@/lib/section-routes";
 import { useExplorerStore, type ExplorerView } from "@/lib/explorer-store";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
@@ -28,6 +30,7 @@ const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 type FangyuExplorerProps = {
   sections: FangyuSection[];
   overviewSection: FangyuSection;
+  initialSelectedId?: string;
 };
 
 const viewItems: Array<{ id: ExplorerView; label: string; icon: ComponentType<{ size?: number }> }> = [
@@ -65,7 +68,7 @@ function GitHubLink() {
   );
 }
 
-export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProps) {
+export function FangyuExplorer({ sections, overviewSection, initialSelectedId }: FangyuExplorerProps) {
   const provinceSections = useMemo(
     () => sections.filter((section) => section.title !== "历代州域形势纪要序"),
     [sections],
@@ -77,12 +80,14 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
   const setQuery = useExplorerStore((state) => state.setQuery);
   const setSelectedId = useExplorerStore((state) => state.setSelectedId);
   const setView = useExplorerStore((state) => state.setView);
+  const effectiveSelectedId = selectedId ?? initialSelectedId ?? navigableSections[0]?.id;
 
   useEffect(() => {
-    if (!selectedId && navigableSections[0]) {
-      setSelectedId(navigableSections[0].id);
+    const nextSelectedId = initialSelectedId ?? navigableSections[0]?.id;
+    if (nextSelectedId && selectedId !== nextSelectedId) {
+      setSelectedId(nextSelectedId);
     }
-  }, [navigableSections, selectedId, setSelectedId]);
+  }, [initialSelectedId, navigableSections, selectedId, setSelectedId]);
 
   const filteredSections = useMemo(() => {
     const keyword = query.trim();
@@ -102,7 +107,7 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
     });
   }, [navigableSections, query]);
 
-  const selected = navigableSections.find((section) => section.id === selectedId) ?? navigableSections[0];
+  const selected = navigableSections.find((section) => section.id === effectiveSelectedId) ?? navigableSections[0];
 
   return (
     <main className="min-h-screen bg-[#f7f7f4] text-[#202320]">
@@ -126,8 +131,9 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
             {filteredSections.map((section) => {
               const active = section.id === selected.id;
               return (
-                <button
+                <Link
                   key={section.id}
+                  href={section.id === overviewSection.id ? "/" : getSectionPath(section)}
                   onClick={() => setSelectedId(section.id)}
                   className={clsx(
                     "block w-full border-b border-[#e9e5da] px-4 py-3 text-left transition sm:px-5 sm:py-4",
@@ -140,7 +146,7 @@ export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProp
                       {section.analysis.thesis}
                     </span>
                   </span>
-                </button>
+                </Link>
               );
             })}
           </nav>
@@ -538,10 +544,20 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
   const [viewportSize, setViewportSize] = useState({ width: 1100, height: 600 });
   const isCompactTopology = viewportSize.width < 640;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!viewportRef.current) return;
 
     const element = viewportRef.current;
+    const updateViewportSize = () => {
+      const { width, height } = element.getBoundingClientRect();
+      setViewportSize({
+        width: Math.max(width, 320),
+        height: Math.max(height, width < 640 ? 760 : 420),
+      });
+    };
+
+    updateViewportSize();
+
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
       if (!entry) return;
@@ -599,6 +615,14 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
         return {
           id: node.id,
           position,
+          width: size,
+          height: size,
+          initialWidth: size,
+          initialHeight: size,
+          measured: {
+            width: size,
+            height: size,
+          },
           data: {
             label: isCompactTopology ? (
               <div className="group relative flex flex-col items-center gap-0.5" title={modernRegion ? `今：${modernRegion}` : undefined}>
@@ -696,7 +720,6 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
         </div>
         <div ref={viewportRef} className="min-h-[760px] flex-1 rounded-[8px] border border-[#d9dce4] bg-white sm:min-h-[520px]">
           <ReactFlow
-            key={`${section.id}-${Math.round(viewportSize.width)}-${Math.round(viewportSize.height)}`}
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}

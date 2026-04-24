@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { sectionSlug } from "@/lib/section-routes";
 
 export type Place = {
   name: string;
@@ -22,6 +23,7 @@ export type SectionAnalysis = {
 
 export type FangyuSection = {
   id: string;
+  slug: string;
   order: number;
   title: string;
   displayTitle: string;
@@ -318,6 +320,10 @@ function sectionId(title: string, order: number) {
   return `${String(order).padStart(2, "0")}-${title.replace(/[^\p{Letter}\p{Number}]+/gu, "-")}`;
 }
 
+export function findSectionBySlug(sections: FangyuSection[], slug: string) {
+  return sections.find((section) => section.slug === slug);
+}
+
 function toDisplayTitle(title: string) {
   const displayTitles: Record<string, string> = {
     历代州域形势纪要序: "历代州域形势",
@@ -358,6 +364,7 @@ export function getFangyuSections(): FangyuSection[] {
 
     return {
       id: sectionId(title, order),
+      slug: sectionSlug(title, order),
       order,
       title,
       displayTitle: toDisplayTitle(title),
@@ -418,6 +425,7 @@ export function getProvinceOverviewSection(sections: FangyuSection[]): FangyuSec
 
   return {
     id: overviewSectionId,
+    slug: "overview",
     order: 0,
     title: "各省地缘形势总览",
     displayTitle: "各省地缘形势总览",
