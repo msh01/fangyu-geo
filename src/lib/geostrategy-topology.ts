@@ -49,6 +49,10 @@ type GeoPoint = {
 };
 
 const topologyGeoByLabel: Record<string, GeoPoint> = {
+  北直: { longitude: 116.4, latitude: 39.9 },
+  南直: { longitude: 118.8, latitude: 32.0 },
+  海上压力: { longitude: 123.5, latitude: 28.8 },
+  北边压力: { longitude: 112.5, latitude: 43.2 },
   "北京/燕京": { longitude: 116.4, latitude: 39.9 },
   开平: { longitude: 116.1, latitude: 42.2 },
   辽阳: { longitude: 123.2, latitude: 41.3 },
@@ -185,6 +189,40 @@ function makeModel(seed: ModelSeed): TopologyModel {
 }
 
 const models: Record<string, ModelSeed> = {
+  各省地缘形势总览: {
+    title: "各省地缘形势总览拓扑",
+    doctrine: "全国地缘不是若干孤立省份的拼盘，而是北方骨架、江海转输和西南边徼彼此耦合的整体网络。",
+    verdict: "北方稳则中原可控，江汉与江淮通则东南能转输，西南锁钥稳则边徼与后方具备纵深。",
+    nodes: [
+      { id: "north", label: "北直", kind: "core", note: "京师中枢", evidence: "北方骨架" },
+      { id: "shandong", label: "山东", kind: "gate", note: "漕海咽喉", evidence: "漕运与海防" },
+      { id: "shanxi", label: "山西", kind: "shield", note: "表里山河", evidence: "太行与雁门" },
+      { id: "henan", label: "河南", kind: "base", note: "中原四会", evidence: "天下之中" },
+      { id: "shaanxi", label: "陕西", kind: "core", note: "关中上游", evidence: "王业根本" },
+      { id: "nanzhi", label: "南直", kind: "resource", note: "江淮财赋", evidence: "东南根基" },
+      { id: "huguang", label: "湖广", kind: "gate", note: "江汉腰膂", evidence: "上游命门" },
+      { id: "sichuan", label: "四川", kind: "shield", note: "西部战守", evidence: "巴蜀纵深" },
+      { id: "lingnan", label: "广东", kind: "route", note: "岭南海口", evidence: "海路与南疆" },
+      { id: "yungui", label: "云南", kind: "shield", note: "西南边徼", evidence: "远驭外缘" },
+      { id: "guizhou", label: "贵州", kind: "gate", note: "西南锁钥", evidence: "山地通道" },
+      { id: "maritime", label: "海上压力", kind: "threat", note: "东南沿海风险", evidence: "海防扰动" },
+      { id: "steppe", label: "北边压力", kind: "threat", note: "燕晋边患", evidence: "边患传导" },
+    ],
+    edges: [
+      { source: "shanxi", target: "north", kind: "support", label: "西北屏护", pressure: 82, note: "山西与北直相互构成北方防御骨架。" },
+      { source: "shandong", target: "north", kind: "supply", label: "漕海供给", pressure: 86, note: "山东决定京师南北咽喉与海道替代能力。" },
+      { source: "henan", target: "north", kind: "support", label: "中原策应", pressure: 76, note: "中原稳定时，京师不至于孤露悬远。" },
+      { source: "shaanxi", target: "henan", kind: "offense", label: "关中制中原", pressure: 90, note: "关中是牵动中原与天下大势的上游枢纽。" },
+      { source: "huguang", target: "nanzhi", kind: "support", label: "江汉支东南", pressure: 88, note: "湖广稳，东南方能真正掌握长江攻守。" },
+      { source: "nanzhi", target: "north", kind: "supply", label: "财赋北输", pressure: 84, note: "东南财赋与漕运长期支撑北方政权运转。" },
+      { source: "sichuan", target: "huguang", kind: "support", label: "上游纵深", pressure: 72, note: "四川为湖广和江汉提供西部战守弹性。" },
+      { source: "guizhou", target: "yungui", kind: "support", label: "黔滇锁钥", pressure: 70, note: "贵州维持西南诸路贯通，避免云南孤悬。" },
+      { source: "lingnan", target: "nanzhi", kind: "supply", label: "海陆互济", pressure: 62, note: "岭南与东南共同承担海路、财赋与南疆支撑。" },
+      { source: "steppe", target: "north", kind: "threaten", label: "北边压京", pressure: 91, note: "北方压力首先落在京畿与晋北防线。" },
+      { source: "maritime", target: "shandong", kind: "threaten", label: "海路牵动", pressure: 68, note: "海上扰动会同时冲击山东与东南航运体系。" },
+      { source: "maritime", target: "lingnan", kind: "threaten", label: "沿海分压", pressure: 64, note: "岭南海口既是机遇也是沿海风险入口。" },
+    ],
+  },
   北直方舆纪要序: {
     title: "北直：燕都边防拓扑",
     doctrine: "燕京的帝都价值不在城池本身，而在大宁、开平、辽左等外屏是否完整。",

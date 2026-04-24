@@ -385,3 +385,57 @@ export function getAllPlaces(sections: FangyuSection[]) {
 
   return [...places.values()];
 }
+
+const overviewSectionId = "00-province-overview";
+
+export function getProvinceOverviewSection(sections: FangyuSection[]): FangyuSection {
+  const provinceSections = sections.filter((section) => section.analysis.posture !== "总论");
+  const strategicWeight = Math.round(
+    provinceSections.reduce((sum, section) => sum + section.analysis.strategicWeight, 0) / Math.max(provinceSections.length, 1),
+  );
+  const defensibility = Math.round(
+    provinceSections.reduce((sum, section) => sum + section.analysis.defensibility, 0) / Math.max(provinceSections.length, 1),
+  );
+  const mobility = Math.round(
+    provinceSections.reduce((sum, section) => sum + section.analysis.mobility, 0) / Math.max(provinceSections.length, 1),
+  );
+  const risk = Math.round(
+    provinceSections.reduce((sum, section) => sum + section.analysis.risk, 0) / Math.max(provinceSections.length, 1),
+  );
+  const places = provinceSections.map((section) => ({
+    name: section.displayTitle.replace(/地缘形势$/, ""),
+    coordinates: section.analysis.places[0]?.coordinates ?? [105, 35],
+    role: section.analysis.thesis,
+  }));
+  const themes = Array.from(new Set(provinceSections.flatMap((section) => section.analysis.themes))).slice(0, 10);
+  const periods = Array.from(new Set(provinceSections.flatMap((section) => section.analysis.periods)));
+  const text = [
+    "本总览将各省地缘形势放到同一张战略桌面上观察。",
+    "北直、山东、山西、河南、陕西共同构成北方与中原的权力骨架；南直、湖广、江西、浙江、福建、广东串起江海与财赋通道；四川、广西、云南、贵州则形成西南纵深与边徼锁钥。",
+    "如果把天下看作一套拓扑网络，那么关中、中原、燕蓟负责牵动大势，江汉与江淮负责转输和攻守转换，岭南与西南承担侧翼、边防与后方弹性。",
+    "因此，各省地缘形势的总览重点不在单点险要，而在诸省之间如何相互支撑、传导压力与提供机动纵深。",
+  ].join("\n\n");
+
+  return {
+    id: overviewSectionId,
+    order: 0,
+    title: "各省地缘形势总览",
+    displayTitle: "各省地缘形势总览",
+    text,
+    excerpt:
+      "天下不能有治而无乱也。繇乱而之治，则州域奠定，而形势操于一人。繇治而之乱，则州域纷更，而形势散于天下。盖有都会焉，有藩服焉，有疆索焉，此州域也。而即一人之形势也，封域不可恃为强，城郭不可恃为固...",
+    wordCount: Array.from(text.replace(/\s+/g, "")).length,
+    analysis: {
+      summary: "从全国尺度统看各省地缘关系，重点观察北方骨架、江海转输与西南边徼三组力量如何相互支撑。",
+      thesis: "各省的地缘价值不在孤立险要，而在省际之间形成的屏障、通道、资储与压力传导网络。",
+      posture: "总论",
+      strategicWeight,
+      defensibility,
+      mobility,
+      risk,
+      themes,
+      periods,
+      places,
+    },
+  };
+}

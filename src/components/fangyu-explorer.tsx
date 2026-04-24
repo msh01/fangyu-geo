@@ -27,6 +27,7 @@ const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 
 type FangyuExplorerProps = {
   sections: FangyuSection[];
+  overviewSection: FangyuSection;
 };
 
 const viewItems: Array<{ id: ExplorerView; label: string; icon: ComponentType<{ size?: number }> }> = [
@@ -64,7 +65,12 @@ function GitHubLink() {
   );
 }
 
-export function FangyuExplorer({ sections }: FangyuExplorerProps) {
+export function FangyuExplorer({ sections, overviewSection }: FangyuExplorerProps) {
+  const provinceSections = useMemo(
+    () => sections.filter((section) => section.title !== "历代州域形势纪要序"),
+    [sections],
+  );
+  const navigableSections = useMemo(() => [overviewSection, ...provinceSections], [overviewSection, provinceSections]);
   const query = useExplorerStore((state) => state.query);
   const selectedId = useExplorerStore((state) => state.selectedId);
   const view = useExplorerStore((state) => state.view);
@@ -73,15 +79,15 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
   const setView = useExplorerStore((state) => state.setView);
 
   useEffect(() => {
-    if (!selectedId && sections[1]) {
-      setSelectedId(sections[1].id);
+    if (!selectedId && navigableSections[0]) {
+      setSelectedId(navigableSections[0].id);
     }
-  }, [sections, selectedId, setSelectedId]);
+  }, [navigableSections, selectedId, setSelectedId]);
 
   const filteredSections = useMemo(() => {
     const keyword = query.trim();
-    if (!keyword) return sections;
-    return sections.filter((section) => {
+    if (!keyword) return navigableSections;
+    return navigableSections.filter((section) => {
       const haystack = [
         section.title,
         section.displayTitle,
@@ -94,9 +100,9 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
       ].join("\n");
       return haystack.includes(keyword);
     });
-  }, [query, sections]);
+  }, [navigableSections, query]);
 
-  const selected = sections.find((section) => section.id === selectedId) ?? sections[1] ?? sections[0];
+  const selected = navigableSections.find((section) => section.id === selectedId) ?? navigableSections[0];
 
   return (
     <main className="min-h-screen bg-[#f7f7f4] text-[#202320]">
@@ -172,10 +178,12 @@ export function FangyuExplorer({ sections }: FangyuExplorerProps) {
           </div>
 
           <div className="min-h-0 flex-1 p-4 md:p-6">
-            {view === "map" && <StrategyMap sections={sections} selected={selected} onSelect={setSelectedId} />}
+            {view === "map" && (
+              <StrategyMap sections={provinceSections} selected={selected} overviewSection={overviewSection} onSelect={setSelectedId} />
+            )}
             {view === "topology" && <TopologySimulation section={selected} />}
             {view === "graph" && <RelationGraph section={selected} />}
-            {view === "timeline" && <TimelineView sections={sections} selected={selected} />}
+            {view === "timeline" && <TimelineView sections={navigableSections} selected={selected} />}
             {view === "text" && <TextView section={selected} query={query} />}
           </div>
           <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-5 py-5">
@@ -244,19 +252,23 @@ function AnalysisPanel({ section, view }: { section: FangyuSection; view: Explor
 function StrategyMap({
   sections,
   selected,
+  overviewSection,
   onSelect,
 }: {
   sections: FangyuSection[];
   selected: FangyuSection;
+  overviewSection: FangyuSection;
   onSelect: (id: string) => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<import("maplibre-gl").Map | null>(null);
 
-  const geojson = useMemo(
-    () => ({
+  const geojson = useMemo(() => {
+    const sourceSections = selected.id === overviewSection.id ? [overviewSection] : sections;
+
+    return {
       type: "FeatureCollection" as const,
-      features: sections.flatMap((section) =>
+      features: sourceSections.flatMap((section) =>
         section.analysis.places.map((place) => ({
           type: "Feature" as const,
           properties: {
@@ -272,9 +284,8 @@ function StrategyMap({
           },
         })),
       ),
-    }),
-    [sections, selected.id],
-  );
+    };
+  }, [overviewSection, sections, selected.id]);
 
   useEffect(() => {
     let mounted = true;
