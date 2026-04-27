@@ -14,7 +14,7 @@ import {
   type Edge,
   type Node,
 } from "@xyflow/react";
-import { BookOpenText, BrainCircuit, ExternalLink, GitBranch, Map, Search, Timer } from "lucide-react";
+import { BookOpenText, BrainCircuit, GitBranch, Map, Search, Timer } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
 import type { EChartsOption } from "echarts";
@@ -65,10 +65,11 @@ function GitHubLink() {
       rel="noreferrer"
       aria-label="GitHub 仓库"
       title="GitHub 仓库"
-      className="inline-flex h-10 w-full items-center justify-center gap-2 border border-[#cfcbbf] bg-white px-3 text-sm text-[#30342f] transition hover:border-[#769173] hover:bg-[#eef3ea] sm:w-auto"
+      className="inline-flex h-12 w-12 shrink-0 items-center justify-center border border-[#cfcbbf] bg-white text-[#30342f] transition hover:border-[#769173] hover:bg-[#eef3ea]"
     >
-      <ExternalLink size={16} />
-      GitHub 仓库
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+        <path d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.51.47-3.16-.63-3.36-1.2-.11-.29-.6-1.2-1.03-1.44-.35-.19-.85-.66-.01-.67.79-.01 1.35.74 1.54 1.05.9 1.55 2.34 1.11 2.91.85.09-.67.35-1.11.64-1.37-2.22-.26-4.55-1.14-4.55-5.05 0-1.11.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.28 9.28 0 0 1 12 7.01c.85 0 1.71.12 2.51.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.92-2.34 4.79-4.57 5.05.36.32.68.93.68 1.89 0 1.37-.01 2.47-.01 2.8 0 .27.18.59.69.49A10.08 10.08 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z" />
+      </svg>
     </a>
   );
 }
@@ -200,26 +201,29 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
                 {selected.displayTitle}
               </h2>
             </div>
-            <div className="grid min-w-0 grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-5 lg:w-[520px]">
-              {viewItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setView(item.id)}
-                    title={item.label}
-                    className={clsx(
-                      "flex h-12 min-w-0 items-center justify-center gap-2 border px-2 text-sm font-medium transition",
-                      view === item.id
-                        ? "border-[#b84b36] bg-[#b84b36] text-white"
-                        : "border-[#cfcbbf] bg-white text-[#30342f] hover:border-[#769173]",
-                    )}
-                  >
-                    <Icon size={17} />
-                    <span className="text-xs leading-none sm:text-sm">{item.label}</span>
-                  </button>
-                );
-              })}
+            <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
+              <div className="grid min-w-0 grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-5 lg:w-[520px]">
+                {viewItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setView(item.id)}
+                      title={item.label}
+                      className={clsx(
+                        "flex h-12 min-w-0 items-center justify-center gap-2 border px-2 text-sm font-medium transition",
+                        view === item.id
+                          ? "border-[#b84b36] bg-[#b84b36] text-white"
+                          : "border-[#cfcbbf] bg-white text-[#30342f] hover:border-[#769173]",
+                      )}
+                    >
+                      <Icon size={17} />
+                      <span className="text-xs leading-none sm:text-sm">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <GitHubLink />
             </div>
           </div>
 
@@ -232,9 +236,6 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
             {view === "timeline" && <TimelineView sections={navigableSections} selected={selected} />}
             {view === "text" && <TextView section={selected} query={query} />}
           </div>
-          <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-3 py-4 sm:px-5 sm:py-5">
-            <GitHubLink />
-          </footer>
         </section>
 
         {showAnalysisAside && (
