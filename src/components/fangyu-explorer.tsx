@@ -52,6 +52,11 @@ function getModernRegionLabel(name: string) {
   return getModernRegion(name)?.replace(/^今[：:\s]*/, "");
 }
 
+function getSectionTabLabel(section: FangyuSection, overviewSection: FangyuSection) {
+  if (section.id === overviewSection.id) return "总览";
+  return section.displayTitle.replace("地缘形势", "");
+}
+
 function GitHubLink() {
   return (
     <a
@@ -109,20 +114,46 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
 
   const selected = navigableSections.find((section) => section.id === effectiveSelectedId) ?? navigableSections[0];
   const showAnalysisAside = view !== "topology";
+  const sectionLinks = filteredSections.map((section) => {
+    const active = section.id === selected.id;
+    return (
+      <Link
+        key={section.id}
+        href={section.id === overviewSection.id ? "/" : getSectionPath(section)}
+        onClick={() => setSelectedId(section.id)}
+        className={clsx(
+          "block w-full border-b border-[#e9e5da] px-4 py-3 text-left transition sm:px-5 sm:py-4",
+          active ? "bg-[#23382f] text-white" : "bg-transparent hover:bg-[#eef3ea]",
+        )}
+      >
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-medium">{section.displayTitle}</span>
+          <span
+            className={clsx(
+              "mt-1 block line-clamp-2 text-xs leading-5 xl:truncate xl:leading-normal",
+              active ? "text-[#d7dfd7]" : "text-[#777a72]",
+            )}
+          >
+            {section.analysis.thesis}
+          </span>
+        </span>
+      </Link>
+    );
+  });
 
   return (
-    <main className="min-h-screen bg-[#f7f7f4] text-[#202320]">
+    <main className="min-h-screen overflow-x-clip bg-[#f7f7f4] text-[#202320]">
       <div
         className={clsx(
-          "grid min-h-screen grid-cols-1",
+          "grid min-h-screen w-full max-w-full grid-cols-1",
           showAnalysisAside ? "xl:grid-cols-[300px_minmax(0,1fr)_360px]" : "xl:grid-cols-[300px_minmax(0,1fr)]",
         )}
       >
-        <aside className="border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
+        <aside className="min-w-0 border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
           <div className="px-4 py-4 sm:px-5 sm:py-5">
             <p className="text-xs tracking-[0.22em] text-[#7a3c2e]">形势推演</p>
             <h1 className="mt-3 text-xl font-semibold leading-tight text-[#171916] sm:text-2xl">古代地缘形势推演</h1>
-            <div className="mt-4 flex h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3 sm:mt-5">
+            <div className="mt-4 hidden h-11 items-center gap-2 border border-[#cfcbbf] bg-white px-3 sm:mt-5 xl:flex">
               <Search size={17} className="text-[#7b7d74]" />
               <input
                 value={query}
@@ -133,40 +164,43 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
             </div>
           </div>
 
-          <nav className="max-h-[36vh] overflow-y-auto border-t border-[#e2dfd3] sm:max-h-[42vh] xl:max-h-[calc(100vh-166px)]">
-            {filteredSections.map((section) => {
-              const active = section.id === selected.id;
-              return (
-                <Link
-                  key={section.id}
-                  href={section.id === overviewSection.id ? "/" : getSectionPath(section)}
-                  onClick={() => setSelectedId(section.id)}
-                  className={clsx(
-                    "block w-full border-b border-[#e9e5da] px-4 py-3 text-left transition sm:px-5 sm:py-4",
-                    active ? "bg-[#23382f] text-white" : "bg-transparent hover:bg-[#eef3ea]",
-                  )}
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium">{section.displayTitle}</span>
-                    <span className={clsx("mt-1 block truncate text-xs", active ? "text-[#d7dfd7]" : "text-[#777a72]")}>
-                      {section.analysis.thesis}
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
+          <nav className="overflow-x-auto border-t border-[#e2dfd3] px-4 py-3 xl:hidden" aria-label="切换地区">
+            <div className="flex w-max gap-2 pr-4">
+              {navigableSections.map((section) => {
+                const active = section.id === selected.id;
+                return (
+                  <Link
+                    key={section.id}
+                    href={section.id === overviewSection.id ? "/" : getSectionPath(section)}
+                    onClick={() => setSelectedId(section.id)}
+                    className={clsx(
+                      "inline-flex h-9 shrink-0 items-center border px-3 text-sm transition",
+                      active
+                        ? "border-[#23382f] bg-[#23382f] text-white"
+                        : "border-[#cfcbbf] bg-white text-[#30342f] hover:border-[#769173] hover:bg-[#eef3ea]",
+                    )}
+                  >
+                    {getSectionTabLabel(section, overviewSection)}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          <nav className="hidden max-h-[32vh] overflow-y-auto border-t border-[#e2dfd3] sm:max-h-[42vh] xl:block xl:max-h-[calc(100vh-166px)]">
+            {sectionLinks}
           </nav>
         </aside>
 
-        <section className="flex min-h-screen min-w-0 flex-col">
-          <div className="flex flex-col gap-4 border-b border-[#dad7cb] bg-[#fdfcf8] px-4 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
+        <section className="flex min-w-0 flex-col xl:min-h-screen">
+          <div className="flex min-w-0 flex-col gap-4 border-b border-[#dad7cb] bg-[#fdfcf8] px-4 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0">
               <p className="font-mono text-sm text-[#7a3c2e]">{selected.analysis.posture}</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-normal text-[#171916] sm:text-3xl">
+              <h2 className="mt-2 text-[1.65rem] font-semibold leading-tight tracking-normal text-[#171916] sm:text-3xl">
                 {selected.displayTitle}
               </h2>
             </div>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:w-[520px]">
+            <div className="grid min-w-0 grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-5 lg:w-[520px]">
               {viewItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -175,21 +209,21 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
                     onClick={() => setView(item.id)}
                     title={item.label}
                     className={clsx(
-                      "flex h-12 items-center justify-center gap-2 border px-2 text-sm font-medium transition",
+                      "flex h-12 min-w-0 items-center justify-center gap-2 border px-2 text-sm font-medium transition",
                       view === item.id
                         ? "border-[#b84b36] bg-[#b84b36] text-white"
                         : "border-[#cfcbbf] bg-white text-[#30342f] hover:border-[#769173]",
                     )}
                   >
                     <Icon size={17} />
-                    <span className="text-xs sm:text-sm">{item.label}</span>
+                    <span className="text-xs leading-none sm:text-sm">{item.label}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 p-4 md:p-6">
+          <div className="min-h-0 min-w-0 flex-1 p-3 sm:p-4 md:p-6">
             {view === "map" && (
               <StrategyMap sections={provinceSections} selected={selected} overviewSection={overviewSection} onSelect={setSelectedId} />
             )}
@@ -198,13 +232,13 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
             {view === "timeline" && <TimelineView sections={navigableSections} selected={selected} />}
             {view === "text" && <TextView section={selected} query={query} />}
           </div>
-          <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-4 py-4 sm:px-5 sm:py-5">
+          <footer className="flex justify-center border-t border-[#dad7cb] bg-[#fdfcf8] px-3 py-4 sm:px-5 sm:py-5">
             <GitHubLink />
           </footer>
         </section>
 
         {showAnalysisAside && (
-          <aside className="border-t border-[#dad7cb] bg-[#fbfaf6] xl:border-l xl:border-t-0">
+          <aside className="min-w-0 border-t border-[#dad7cb] bg-[#fbfaf6] xl:border-l xl:border-t-0">
             <AnalysisPanel section={selected} view={view} />
           </aside>
         )}
@@ -222,15 +256,15 @@ function AnalysisPanel({ section, view }: { section: FangyuSection; view: Explor
   ] as const;
 
   return (
-    <div className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 xl:sticky xl:top-0 xl:max-h-screen">
+    <div className="min-w-0 overflow-y-auto px-3 py-4 sm:px-5 sm:py-5 xl:sticky xl:top-0 xl:max-h-screen">
       {view !== "topology" && (
         <div className="border-b border-[#dad7cb] pb-5">
           <p className="text-sm text-[#777a72]">核心判断</p>
-          <p className="mt-2 text-lg font-semibold leading-8 text-[#171916] sm:text-xl">{section.analysis.thesis}</p>
+          <p className="mt-2 text-[1.05rem] font-semibold leading-8 text-[#171916] sm:text-xl">{section.analysis.thesis}</p>
         </div>
       )}
 
-      <div className={clsx("grid grid-cols-2 gap-3", view === "topology" ? "mt-0" : "mt-6")}>
+      <div className={clsx("grid grid-cols-1 gap-3 min-[390px]:grid-cols-2", view === "topology" ? "mt-0" : "mt-6")}>
         {metrics.map(([label, value]) => (
           <div key={label} className="border border-[#dad7cb] bg-white p-3">
             <div className="flex items-baseline justify-between">
@@ -439,8 +473,8 @@ function StrategyMap({
   }, [geojson, selected]);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-      <div className="h-[360px] overflow-hidden border border-[#cfcbbf] bg-[#e8eadf] sm:h-[460px] lg:h-[620px]">
+    <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="h-[clamp(300px,72vh,520px)] min-w-0 overflow-hidden border border-[#cfcbbf] bg-[#e8eadf] sm:h-[460px] lg:h-[620px]">
         <div ref={containerRef} className="h-full w-full" />
       </div>
       <div className="border border-[#dad7cb] bg-white p-4">
@@ -518,7 +552,7 @@ function RelationGraph({ section }: { section: FangyuSection }) {
   );
 
   return (
-    <div className="h-[360px] border border-[#cfcbbf] bg-white sm:h-[460px] lg:h-[620px]">
+    <div className="h-[clamp(320px,72vh,520px)] min-w-0 border border-[#cfcbbf] bg-white sm:h-[460px] lg:h-[620px]">
       <ReactFlow nodes={nodes} edges={edges} fitView minZoom={0.45} maxZoom={1.4}>
         <Background color="#d7d3c6" gap={28} />
         <MiniMap nodeColor={(node) => (node.id === "section" ? "#23382f" : "#769173")} />
@@ -802,12 +836,12 @@ function TopologySimulation({ section, onOpenText }: { section: FangyuSection; o
   }, [initialEdges, setEdges]);
 
   return (
-    <div className="grid h-full min-h-[480px] gap-4 lg:min-h-[620px] lg:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_420px]">
-      <div className="flex h-full min-h-[480px] flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4 lg:min-h-[620px]">
+    <div className="grid h-full min-w-0 gap-3 sm:gap-4 lg:min-h-[620px] lg:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="flex h-full min-w-0 flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-3 sm:p-4 lg:min-h-[620px]">
         <div className="flex flex-col items-start justify-between gap-3 px-1 pb-4 xl:flex-row xl:gap-4">
-          <div className="max-w-5xl">
+          <div className="min-w-0 max-w-5xl">
             <p className="text-sm text-[#7a3c2e]">核心判断</p>
-            <h3 className="mt-1 text-lg font-semibold leading-8 text-[#171916] xl:text-xl">{section.analysis.thesis}</h3>
+            <h3 className="mt-1 text-[1.05rem] font-semibold leading-8 text-[#171916] xl:text-xl">{section.analysis.thesis}</h3>
           </div>
           <div className="flex flex-wrap gap-2 text-sm text-[#30342f] xl:justify-end">
             {section.analysis.themes.map((theme) => (
@@ -817,7 +851,7 @@ function TopologySimulation({ section, onOpenText }: { section: FangyuSection; o
             ))}
           </div>
         </div>
-        <div ref={viewportRef} className="min-h-[760px] flex-1 rounded-[8px] border border-[#d9dce4] bg-white sm:min-h-[520px]">
+        <div ref={viewportRef} className="min-h-[clamp(520px,78vh,760px)] min-w-0 flex-1 rounded-[8px] border border-[#d9dce4] bg-white sm:min-h-[520px]">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -835,7 +869,7 @@ function TopologySimulation({ section, onOpenText }: { section: FangyuSection; o
         </div>
       </div>
 
-      <div className="border border-[#dad7cb] bg-white p-4 2xl:p-5">
+      <div className="min-w-0 border border-[#dad7cb] bg-white p-4 2xl:p-5">
         <div>
           <p className="text-sm text-[#777a72]">拓扑角色</p>
           <div className="mt-3 grid grid-cols-1 gap-2">
@@ -936,8 +970,8 @@ function TimelineView({ sections, selected }: { sections: FangyuSection[]; selec
   );
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
-      <div className="h-[360px] border border-[#cfcbbf] bg-white p-3 sm:h-[460px] lg:h-[620px]">
+    <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+      <div className="h-[clamp(320px,72vh,520px)] min-w-0 border border-[#cfcbbf] bg-white p-2 sm:h-[460px] sm:p-3 lg:h-[620px]">
         <ReactECharts option={option} style={{ height: "100%", width: "100%" }} />
       </div>
       <div className="border border-[#dad7cb] bg-white p-4">
@@ -989,7 +1023,7 @@ function TextView({ section, query }: { section: FangyuSection; query: string })
   }, [query, section.text]);
 
   return (
-    <article className="border border-[#cfcbbf] bg-white px-4 py-5 sm:px-5 md:px-10 md:py-9">
+    <article className="min-w-0 border border-[#cfcbbf] bg-white px-3 py-5 sm:px-5 md:px-10 md:py-9">
       <div className="prose-fangyu">{paragraphs}</div>
     </article>
   );

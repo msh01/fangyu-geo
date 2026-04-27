@@ -21,11 +21,16 @@ body {
   color: var(--foreground);
   font-family: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
+  overflow-x: clip;
 }
 
 button,
 input {
   font: inherit;
+}
+
+* {
+  min-width: 0;
 }
 
 .maplibregl-ctrl button {
@@ -36,11 +41,18 @@ input {
   display: none;
 }
 
+.react-flow,
+.react-flow__renderer,
+.react-flow__pane {
+  max-width: 100%;
+}
+
 .prose-fangyu {
   color: #202320;
   font-family: "LXGW WenKai", "霞鹜文楷", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.95;
+  font-size: 16px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 640px) {
