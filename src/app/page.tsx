@@ -1,5 +1,4 @@
 import { FangyuExplorer } from "@/components/fangyu-explorer";
-import { SeoHomeContent } from "@/components/seo-content";
 import { getFangyuSections, getProvinceOverviewSection } from "@/lib/fangyu-data";
 import { getSectionPath } from "@/lib/section-routes";
 import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_URL } from "@/lib/site-metadata";
@@ -57,7 +56,6 @@ export default function Home() {
         }}
       />
       <FangyuExplorer sections={sections} overviewSection={overviewSection} initialSelectedId={overviewSection.id} />
-      <SeoHomeContent sections={sections} />
     </>
   );
 }

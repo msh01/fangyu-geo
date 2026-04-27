@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FangyuExplorer } from "@/components/fangyu-explorer";
-import { SeoSectionArticle } from "@/components/seo-content";
 import { findSectionBySlug, getFangyuSections, getProvinceOverviewSection } from "@/lib/fangyu-data";
 import { getSectionPath } from "@/lib/section-routes";
 import { SITE_KEYWORDS, SITE_NAME, SITE_URL } from "@/lib/site-metadata";
@@ -115,7 +114,6 @@ export default async function SectionPage({ params }: SectionPageProps) {
         }}
       />
       <FangyuExplorer sections={sections} overviewSection={overviewSection} initialSelectedId={section.id} />
-      <SeoSectionArticle section={section} />
     </>
   );
 }
