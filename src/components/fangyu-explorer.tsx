@@ -538,6 +538,84 @@ const edgeStyleByKind: Record<TopologyEdgeKind, { color: string; dash?: string; 
   offense: { color: "#b84b36", label: "进取路线" },
 };
 
+type TopologyLayoutNode = {
+  id: string;
+  kind: TopologyNodeKind;
+  x: number;
+  y: number;
+};
+
+function getTopologyNodeSize(kind: TopologyNodeKind, scale: number, isCompact: boolean) {
+  return Math.max(isCompact ? 56 : 52, Math.round((kind === "core" ? 86 : 72) * scale));
+}
+
+function getTopologyCollisionSize(kind: TopologyNodeKind, scale: number, isCompact: boolean) {
+  const size = getTopologyNodeSize(kind, scale, isCompact);
+  const visualHalo = kind === "core" ? 38 : 30;
+  const labelRoom = isCompact ? 8 : 18;
+  return size + visualHalo + labelRoom;
+}
+
+function separateTopologyNodes(
+  nodes: TopologyLayoutNode[],
+  viewportSize: { width: number; height: number },
+  scale: number,
+  isCompact: boolean,
+) {
+  const gap = isCompact ? 26 : 58;
+  const edgeInset = isCompact ? 16 : 32;
+  const items = nodes.map((node) => ({
+    ...node,
+    desiredX: node.x,
+    desiredY: node.y,
+    size: getTopologyNodeSize(node.kind, scale, isCompact),
+    collisionSize: getTopologyCollisionSize(node.kind, scale, isCompact),
+  }));
+
+  for (let tick = 0; tick < 140; tick += 1) {
+    for (let i = 0; i < items.length; i += 1) {
+      for (let j = i + 1; j < items.length; j += 1) {
+        const a = items[i];
+        const b = items[j];
+        const ax = a.x + a.size / 2;
+        const ay = a.y + a.size / 2;
+        const bx = b.x + b.size / 2;
+        const by = b.y + b.size / 2;
+        let dx = bx - ax;
+        let dy = by - ay;
+        let distance = Math.hypot(dx, dy);
+        const minDistance = (a.collisionSize + b.collisionSize) / 2 + gap;
+
+        if (distance >= minDistance) continue;
+
+        if (distance < 0.01) {
+          const angle = ((i + j + 1) / Math.max(items.length, 1)) * Math.PI * 2;
+          dx = Math.cos(angle);
+          dy = Math.sin(angle);
+          distance = 1;
+        }
+
+        const push = ((minDistance - distance) / 2) * 0.78;
+        const nx = dx / distance;
+        const ny = dy / distance;
+        a.x -= nx * push;
+        a.y -= ny * push;
+        b.x += nx * push;
+        b.y += ny * push;
+      }
+    }
+
+    for (const item of items) {
+      item.x += (item.desiredX - item.x) * 0.012;
+      item.y += (item.desiredY - item.y) * 0.012;
+      item.x = Math.min(Math.max(item.x, edgeInset), Math.max(edgeInset, viewportSize.width - item.size - edgeInset));
+      item.y = Math.min(Math.max(item.y, edgeInset), Math.max(edgeInset, viewportSize.height - item.size - edgeInset));
+    }
+  }
+
+  return Object.fromEntries(items.map((item) => [item.id, { x: item.x, y: item.y }])) as Record<string, { x: number; y: number }>;
+}
+
 function TopologySimulation({ section }: { section: FangyuSection }) {
   const model = useMemo(() => getTopologyModel(section), [section]);
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -588,19 +666,15 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
     const scale = isCompactTopology
       ? Math.min(1.02, Math.max(0.82, Math.min(usableWidth / 620, usableHeight / 980)))
       : Math.min(1.28, Math.max(0.6, Math.min(usableWidth / 760, usableHeight / 520)));
+    const rawNodes = model.nodes.map((node) => ({
+      id: node.id,
+      kind: node.kind,
+      x: padX + ((node.x - minX) / spanX) * usableWidth,
+      y: padY + ((node.y - minY) / spanY) * usableHeight,
+    }));
 
     return {
-      positions: Object.fromEntries(
-        model.nodes.map((node) => [
-          node.id,
-          {
-            x: padX + ((node.x - minX) / spanX) * usableWidth,
-            y: isCompactTopology
-              ? padY + ((node.y - minY) / spanY) * usableHeight
-              : padY + ((node.y - minY) / spanY) * usableHeight,
-          },
-        ]),
-      ) as Record<string, { x: number; y: number }>,
+      positions: separateTopologyNodes(rawNodes, { width: viewportSize.width, height: viewportSize.height }, scale, isCompactTopology),
       scale,
     };
   }, [isCompactTopology, model.nodes, viewportSize.height, viewportSize.width]);
@@ -610,7 +684,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
       model.nodes.map((node) => {
         const style = nodeStyleByKind[node.kind];
         const position = scaledLayout.positions[node.id] ?? { x: node.x, y: node.y };
-        const size = Math.max(isCompactTopology ? 56 : 52, Math.round((node.kind === "core" ? 86 : 72) * scaledLayout.scale));
+        const size = getTopologyNodeSize(node.kind, scaledLayout.scale, isCompactTopology);
         const modernRegion = getModernRegionLabel(node.label);
         return {
           id: node.id,
