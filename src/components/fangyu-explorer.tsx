@@ -108,10 +108,16 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
   }, [navigableSections, query]);
 
   const selected = navigableSections.find((section) => section.id === effectiveSelectedId) ?? navigableSections[0];
+  const showAnalysisAside = view !== "topology";
 
   return (
     <main className="min-h-screen bg-[#f7f7f4] text-[#202320]">
-      <div className="grid min-h-screen grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_360px]">
+      <div
+        className={clsx(
+          "grid min-h-screen grid-cols-1",
+          showAnalysisAside ? "xl:grid-cols-[300px_minmax(0,1fr)_360px]" : "xl:grid-cols-[300px_minmax(0,1fr)]",
+        )}
+      >
         <aside className="border-b border-[#dad7cb] bg-[#fbfaf6] xl:border-b-0 xl:border-r">
           <div className="px-4 py-4 sm:px-5 sm:py-5">
             <p className="text-xs tracking-[0.22em] text-[#7a3c2e]">形势推演</p>
@@ -187,7 +193,7 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
             {view === "map" && (
               <StrategyMap sections={provinceSections} selected={selected} overviewSection={overviewSection} onSelect={setSelectedId} />
             )}
-            {view === "topology" && <TopologySimulation section={selected} />}
+            {view === "topology" && <TopologySimulation section={selected} onOpenText={() => setView("text")} />}
             {view === "graph" && <RelationGraph section={selected} />}
             {view === "timeline" && <TimelineView sections={navigableSections} selected={selected} />}
             {view === "text" && <TextView section={selected} query={query} />}
@@ -197,9 +203,11 @@ export function FangyuExplorer({ sections, overviewSection, initialSelectedId }:
           </footer>
         </section>
 
-        <aside className="border-t border-[#dad7cb] bg-[#fbfaf6] xl:border-l xl:border-t-0">
-          <AnalysisPanel section={selected} view={view} />
-        </aside>
+        {showAnalysisAside && (
+          <aside className="border-t border-[#dad7cb] bg-[#fbfaf6] xl:border-l xl:border-t-0">
+            <AnalysisPanel section={selected} view={view} />
+          </aside>
+        )}
       </div>
     </main>
   );
@@ -556,6 +564,20 @@ function getTopologyCollisionSize(kind: TopologyNodeKind, scale: number, isCompa
   return size + visualHalo + labelRoom;
 }
 
+function getCompactEdgeNote(note: string) {
+  return note.length > 24 ? `${note.slice(0, 23)}...` : note;
+}
+
+function getSourcePreview(text: string) {
+  const normalized = text.replace(/\s+/g, "");
+  const chars = Array.from(normalized);
+  if (chars.length <= 420) return normalized;
+
+  const clipped = chars.slice(0, 420).join("");
+  const sentenceEnd = Math.max(clipped.lastIndexOf("。"), clipped.lastIndexOf("！"), clipped.lastIndexOf("？"));
+  return `${clipped.slice(0, sentenceEnd > 340 ? sentenceEnd + 1 : 400)}...`;
+}
+
 function separateTopologyNodes(
   nodes: TopologyLayoutNode[],
   viewportSize: { width: number; height: number },
@@ -616,11 +638,12 @@ function separateTopologyNodes(
   return Object.fromEntries(items.map((item) => [item.id, { x: item.x, y: item.y }])) as Record<string, { x: number; y: number }>;
 }
 
-function TopologySimulation({ section }: { section: FangyuSection }) {
+function TopologySimulation({ section, onOpenText }: { section: FangyuSection; onOpenText: () => void }) {
   const model = useMemo(() => getTopologyModel(section), [section]);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [viewportSize, setViewportSize] = useState({ width: 1100, height: 600 });
   const isCompactTopology = viewportSize.width < 640;
+  const sourcePreview = useMemo(() => getSourcePreview(section.text), [section.text]);
 
   useLayoutEffect(() => {
     if (!viewportRef.current) return;
@@ -746,7 +769,14 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
           id: edge.id,
           source: edge.source,
           target: edge.target,
-          label: isCompactTopology ? undefined : `${edge.label} (${edge.pressure}%)`,
+          label: isCompactTopology ? undefined : (
+            <div className="max-w-[220px] border border-white/30 px-2 py-1 text-left shadow-sm" style={{ background: style.color }}>
+              <div className="font-semibold leading-4 text-white">
+                {edge.label} ({edge.pressure}%)
+              </div>
+              <div className="mt-0.5 truncate text-[11px] leading-4 text-white/90">{getCompactEdgeNote(edge.note)}</div>
+            </div>
+          ),
           markerEnd: { type: MarkerType.ArrowClosed, color: style.color },
           animated: edge.kind === "threaten" || edge.kind === "offense",
           style: {
@@ -754,15 +784,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
             strokeWidth: 3,
             strokeDasharray: style.dash,
           },
-          labelStyle: {
-            fill: "#f7f7f4",
-            fontWeight: 700,
-          },
-          labelBgStyle: {
-            fill: style.color,
-            fillOpacity: 0.92,
-          },
-          labelBgPadding: [5, 3],
+          labelShowBg: false,
         };
       }),
     [isCompactTopology, model],
@@ -780,16 +802,19 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
   }, [initialEdges, setEdges]);
 
   return (
-    <div className="grid h-full min-h-[480px] gap-4 lg:min-h-[620px] lg:grid-cols-[minmax(0,1fr)_300px]">
-      <div className="flex min-h-0 flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4">
-        <div className="flex flex-col items-start justify-between gap-3 px-1 pb-4 sm:flex-row sm:gap-4">
-          <div className="max-w-3xl">
+    <div className="grid h-full min-h-[480px] gap-4 lg:min-h-[620px] lg:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="flex h-full min-h-[480px] flex-col overflow-hidden border border-[#cfcbbf] bg-[#e9edf4] p-4 lg:min-h-[620px]">
+        <div className="flex flex-col items-start justify-between gap-3 px-1 pb-4 xl:flex-row xl:gap-4">
+          <div className="max-w-5xl">
             <p className="text-sm text-[#7a3c2e]">核心判断</p>
-            <h3 className="mt-1 text-lg font-semibold leading-8 text-[#171916] sm:text-xl">{section.analysis.thesis}</h3>
+            <h3 className="mt-1 text-lg font-semibold leading-8 text-[#171916] xl:text-xl">{section.analysis.thesis}</h3>
           </div>
-          <div className="text-left text-sm leading-6 text-[#30342f] sm:text-right">
-            <p>分析维度</p>
-            <p className="font-semibold">地缘战略</p>
+          <div className="flex flex-wrap gap-2 text-sm text-[#30342f] xl:justify-end">
+            {section.analysis.themes.map((theme) => (
+              <span key={theme} className="border border-[#cfcbbf] bg-white/70 px-2 py-1">
+                {theme}
+              </span>
+            ))}
           </div>
         </div>
         <div ref={viewportRef} className="min-h-[760px] flex-1 rounded-[8px] border border-[#d9dce4] bg-white sm:min-h-[520px]">
@@ -810,7 +835,7 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
         </div>
       </div>
 
-      <div className="border border-[#dad7cb] bg-white p-4">
+      <div className="border border-[#dad7cb] bg-white p-4 2xl:p-5">
         <div>
           <p className="text-sm text-[#777a72]">拓扑角色</p>
           <div className="mt-3 grid grid-cols-1 gap-2">
@@ -839,6 +864,21 @@ function TopologySimulation({ section }: { section: FangyuSection }) {
               );
             })}
           </div>
+        </div>
+
+        <div className="mt-6 border-t border-[#eee8dd] pt-5">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-[#777a72]">原文摘录</p>
+            <button
+              type="button"
+              onClick={onOpenText}
+              className="inline-flex items-center gap-1.5 border border-[#cfcbbf] bg-[#fffdf7] px-2.5 py-1 text-sm text-[#7a3c2e] transition hover:border-[#b84b36] hover:bg-[#fff5ed]"
+            >
+              <BookOpenText size={15} />
+              查看原文
+            </button>
+          </div>
+          <p className="mt-3 max-h-[420px] overflow-y-auto pr-2 text-sm leading-8 text-[#555951]">{sourcePreview}</p>
         </div>
       </div>
     </div>
